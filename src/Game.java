@@ -1,12 +1,20 @@
 
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.xml.sax.SAXException;
+
+import Util.XMLParser;
 import environment.Direction;
 import environment.Environment;
 import environment.LemmingMind;
@@ -23,32 +31,14 @@ public class Game {
 	
 	private final Environment environment;
 	private final AtomicBoolean stop = new AtomicBoolean(false);
-	private final int LemmingsCount = 5;
-	private final List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
-	private Timer timer;
 	private SpawnerLemmings sp;
-	private int temps = 2;          
+	private static XMLParser parser;
 	/**
 	 * Constructeur du jeu
-	 * @param width dimension de l'env
-	 * @param height dimension de l'env
 	 */
-	public Game(int width, int height) {
-		this.environment = new Environment(width,height);
-		Random rnd = new Random();
-		timer = new Timer();
-		sp = new SpawnerLemmings(LemmingsCount, environment, temps, 20, 20);
-		for(int i=0; i<LemmingsCount; i++) {
-			int x,y;
-			do {
-				x = rnd.nextInt(width);
-				y = rnd.nextInt(height);
-			}
-			while (!this.environment.isFree(x,y));
-			LemmingsBody body = this.environment.addLemmings(x, y, width/2, Direction.NORTH);
-			LemmingMind Lem = new LemmingMind(body);
-			this.Lemmings.add(Lem);
-		}
+	public Game() {
+		this.environment = new Environment(parser.width,parser.height,parser);
+		sp = new SpawnerLemmings(parser.numberLemmings, environment, parser.spx, parser.spy);
 	}
 	
 	/** Run the Lemmings game.
@@ -58,15 +48,23 @@ public class Game {
 		JFrame window = createGUI();
 		
 		if (window!=null) window.setVisible(true);
-				
+		//Lancement du thread de creation des agents
+		Thread T = new Thread(sp);
+		T.start();		
+		
+		
+		
 		while (!this.stop.get()) {
-			
-			
-			for(LemmingMind Lem : this.Lemmings) {
-				Lem.live();
+			//Y a t il des agents ?
+			if(!sp.getLemmingList().isEmpty())
+			{
+				//Live des agents
+				for(LemmingMind Lem : sp.getLemmingList()) {
+					Lem.live();
+				}
+				
 			}
-			        
-	        
+			
 			try {
 				Thread.sleep(500);
 			}
@@ -92,9 +90,29 @@ public class Game {
 	
 	/**
 	 * @param args are the command line arguments
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
-		Game game = new Game(28,28);
+	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+		parser = new XMLParser();
+		
+		//Recherche du xml de creation du monde par l'utilisateur
+		InputStream is;
+		JFrame guiFrame = new JFrame();
+		final JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(guiFrame);
+		String fileIn = null;
+		
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			fileIn = fc.getSelectedFile().getAbsolutePath();
+			
+		}
+		System.out.println("file " + fileIn);
+		//Parse le fichier xml
+		parser.readXML(fileIn);
+		Game game = new Game();
 		game.run();
 		System.exit(0);
 	}

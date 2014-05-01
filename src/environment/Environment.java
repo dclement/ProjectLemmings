@@ -8,6 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import Util.Position;
+import Util.XMLParser;
+
 /**
  * Environnement
  * @author Clement
@@ -35,14 +38,25 @@ public class Environment {
 	private final int height;
 
 	/**
+	 * Ressource contenant les données de l'environnement a creer
+	 */
+	private final XMLParser parser;
+	
+	/**
+	 * End level
+	 */
+	private int totalLemmingsFinish;
+	/**
 	 * @param width is the width of the world.
 	 * @param height is the height of the world.
+	 * @param walls 
+	 * @param parser 
 	 */
-	public Environment(int width, int height) {
+	public Environment(int width, int height, XMLParser parser) {
 		this.width = width;
 		this.height = height;
 		this.grid = new EnvironmentObject[width][height];
-
+		this.parser = parser;
 		//Generation de la carte
 		GenerationMap(this.width,this.height);
 	}
@@ -56,15 +70,24 @@ public class Environment {
 		// TODO 
 		// Generation de carte par fichier externe xml par exemple
 		int x,y;
-		for(int i=0;i<20;i++)
+		
+		//creation de la zone de fin
+		ArrayList<Position> list = parser.Walls;
+		for(Position p :list)
 		{
-			Random rnd = new Random();
-			x = rnd.nextInt(width2);
-			y = rnd.nextInt(height2);
-			
-			this.grid[x][y] = new Wall();
+			this.grid[p.getX()][p.getY()]=new Wall();
+			for(int i=0;i<p.getWidth();i++)
+			{
+				int currentx = p.getX()+i;
+				this.grid[currentx][p.getY()] = new Wall();
+				for(int j=0;j<p.getHeight();j++)
+				{
+					this.grid[currentx][p.getY()+j+1] = new Wall();
+				}
+			}
 		}
-		this.grid[14][14] = new EndArea();
+		this.grid[parser.endAreax][parser.endAreay] = new EndArea();
+		
 		
 		/**
 		 * Bord de la carte
@@ -206,23 +229,45 @@ public class Environment {
 					x<this.width &&
 					y>=0 &&
 					y<this.height) {
-				boolean isPickable = isPickable(x, y);
-				if (isFree(x,y) || isPickable) {
-					if (isPickable) {
-						body.setPickable(this.grid[x][y]);
-					}
-					this.grid[position.x][position.y] = null;
+				//si case en dessous du lemmings est libre == chute
+				if(isFree(position.x, position.y+1))
+				{
+					body.setFall(true);
+				}
+				else
+				{
+					body.setFall(false);
+				}
+				
+				if (!body.isFall() && isFree(x,y)) {
 					this.grid[x][y] = body;
+					this.grid[position.x][position.y] = null;
 					body.setOrientation(dir);
-
+					
+				}
+				else
+				{
+					if(isEndArea(x, y))
+					{
+						System.out.println("Lemmings arrivé !! ");
+						//suppression du body dans la grille
+						this.grid[position.x][position.y] = null;
+						setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
+					}
+					else
+					{
+						this.grid[position.x][y+1] = body;
+						this.grid[position.x][position.y] = null;
+						body.setOrientation(dir);
+					}
 				}
 			}
 		}
 	}
 
 	//TODO
-	public synchronized LemmingsBody addLemmings(int x, int y, int distance, Direction direction) {
-		LemmingsBody body = new LemmingsBody(this, distance, direction);
+	public synchronized LemmingsBody addLemmings(int x, int y, int distance, Direction direction, boolean fall) {
+		LemmingsBody body = new LemmingsBody(this, distance, direction, fall);
 		this.grid[x][y] = body;
 		return body;
 	}
@@ -263,12 +308,36 @@ public class Environment {
 			int x, y;
 			Perception perception;
 
-			//TODO
-			//liste perception
+			for(int i=1; i<=distance; i++) {
+				for(Direction direction : directions) {
+					if (sets.get(direction.ordinal())) {
+						x = position.x + (direction.dx * i);
+						y = position.y + (direction.dy * i);
+						if (!isFree(x,y)) {
+							perception = new Perception(
+									isWall(x,y),
+									direction,
+									i,
+									isEndArea(x, y),
+									isLemmings(x,y));
+							list.add(perception);
+							if (isOccluder(x, y))
+								sets.clear(direction.ordinal());
+						}
+					}
+				}
+			}
 
 		}
-
 		return list;
+	}
+
+	public int getTotalLemmingsFinish() {
+		return totalLemmingsFinish;
+	}
+
+	public void setTotalLemmingsFinish(int totalLemmingsFinish) {
+		this.totalLemmingsFinish = totalLemmingsFinish;
 	}
 
 	

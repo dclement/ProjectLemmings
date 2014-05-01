@@ -1,5 +1,7 @@
 package environment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -8,7 +10,7 @@ import java.util.TimerTask;
  * @author Clement
  *
  */
-public class SpawnerLemmings{
+public class SpawnerLemmings  extends Thread{
 	/**
 	 * Nombre d'agents a spawn
 	 */
@@ -19,14 +21,50 @@ public class SpawnerLemmings{
 	public int posx;
 	public int posy;
 	public Environment e;
-	public int second;
-
-	public SpawnerLemmings(int lemmingsCount, Environment env, int second, int posx, int posy) {
+	private final List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
+			
+	public SpawnerLemmings(int lemmingsCount, Environment env, int posx, int posy) {
 		this.numberLemmingsLeft = lemmingsCount;
 		this.e = env;
 		this.posx = posx;
 		this.posy = posy;
-		this.second = second;
-	
 	}
+	
+	/**
+	 * Thread de creation des agents toutes les 5 seconds
+	 */
+	public void run()
+	{
+		while (true) {
+			
+			spawn();
+			try {
+				Thread.sleep(5000);
+			}
+			catch (InterruptedException e) {
+				return;
+			}
+		}
+		
+	}
+	
+	public void spawn()
+	{
+		System.out.println("spawn  " + numberLemmingsLeft);
+		if(this.numberLemmingsLeft>0)
+		{
+			//position x, position y, distance perception, direction départ, lemmings chute d'une case au depart
+			LemmingsBody body = this.e.addLemmings(this.posx, this.posy, 2, Direction.random(), true);
+			LemmingMind Lem = new LemmingMind(body);
+			Lemmings.add(Lem);
+			this.numberLemmingsLeft--;
+		}
+	}
+	
+	public List<LemmingMind> getLemmingList()
+	{
+		return this.Lemmings;
+	}
+	
+	
 }

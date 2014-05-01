@@ -125,7 +125,7 @@ public class LemmingsGUI extends JFrame implements KeyListener {
 						}
 						if (LemmingsGUI.this.environment.isEndArea(x,y)) {
 							g2d.setColor(Color.RED);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT/2);
+							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 						}
 					}
 				}

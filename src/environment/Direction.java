@@ -5,20 +5,10 @@ import java.util.Random;
 
 
 public enum Direction {
-	/** North. */
-	NORTH(0,-1) {
-		@Override
-		public Direction opposite() { return SOUTH; }
-	},
 	/** West. */
 	WEST(-1,0) {
 		@Override
 		public Direction opposite() { return EAST; }
-	},
-	/** South. */
-	SOUTH(0,+1) {
-		@Override
-		public Direction opposite() { return NORTH; }
 	},
 	/** East. */
 	EAST(+1,0) {

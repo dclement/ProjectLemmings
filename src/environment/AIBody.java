@@ -14,8 +14,8 @@ public abstract class AIBody extends Body {
 	 * @param distance is the maximal distance of perception of the artificial intelligence.
 	 * @param direction is the initial direction of the body.
 	 */
-	public AIBody(Environment env, int distance, Direction direction) {
-		super(env, direction);
+	public AIBody(Environment env, int distance, Direction direction, boolean fall) {
+		super(env, direction, fall);
 		this.distance = distance;
 	}	
 

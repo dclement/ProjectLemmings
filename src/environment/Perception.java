@@ -7,13 +7,15 @@ public class Perception {
 	private final boolean isEndArea;
 	private final Direction direction;
 	private final int distance;
+	private final boolean isLemmings;
 	
-	public Perception(boolean wall, Direction direction, int distance, boolean endArea) {
+	public Perception(boolean wall, Direction direction, int distance, boolean endArea, boolean Lemmings) {
 		
 		this.isWall = wall;
 		this.direction = direction;
 		this.distance = distance;
 		this.isEndArea = endArea;
+		this.isLemmings = Lemmings;
 	}
 	
 	/** Replies if the perceived object is a wall.
@@ -54,6 +56,10 @@ public class Perception {
 	 */
 	public int getDistance() {
 		return this.distance;
+	}
+
+	public boolean isLemmings() {
+		return this.isLemmings;
 	}
 
 }

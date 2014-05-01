@@ -14,8 +14,8 @@ public class LemmingsBody extends AIBody {
 		 * @param distance is the maximal distance of perception of the artificial intelligence.
 		 * @param direction is the initial direction of the body.
 		 */
-		public LemmingsBody(Environment env, int distance, Direction direction) {
-			super(env, distance, direction);
+		public LemmingsBody(Environment env, int distance, Direction direction, boolean fall) {
+			super(env, distance, direction, fall);
 		}
 		
 				
@@ -27,11 +27,5 @@ public class LemmingsBody extends AIBody {
 		 */
 		public void move(Direction dir) {
 			moveDirection(dir);
-		}
-
-
-		public List<Perception> perceive() {
-			// TODO Auto-generated method stub
-			return null;
 		}
 }

@@ -5,14 +5,17 @@ public abstract class Body implements EnvironmentObject {
 
 	private final Environment environment;
 	private Direction orientation;
+	private boolean fall;
 	
 	/**
 	 * @param environment is the environment in which the body is located.
 	 * @param direction is the initial direction of the body.
+	 * @param fall is the position of the lemmings in the env falling or not.
 	 */
-	public Body(Environment environment, Direction direction) {
+	public Body(Environment environment, Direction direction, boolean fall) {
 		this.environment = environment;
 		this.orientation = direction;
+		this.setFall(fall);
 	}
 	
 	/**
@@ -67,6 +70,14 @@ public abstract class Body implements EnvironmentObject {
 	 */
 	void setPickable(EnvironmentObject pickable) {
 		// Must be overridden in child classes
+	}
+
+	public boolean isFall() {
+		return fall;
+	}
+
+	public void setFall(boolean fall) {
+		this.fall = fall;
 	}
 	
 }
