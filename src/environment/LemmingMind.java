@@ -53,7 +53,7 @@ public class LemmingMind implements Entity<LemmingsBody> {
 			}
 			return null;
 		}
-		
+				
 		@Override
 		public void live() {
 			// Get the ghost body
@@ -72,18 +72,18 @@ public class LemmingMind implements Entity<LemmingsBody> {
 				desiredDirection = EndAreaTracking.getDirection();	
 			}
 			else {
-				List<Direction> freeDirections = extractFreeDirections(perception);
-	
-				if (!freeDirections.isEmpty()) {
-					if (freeDirections.contains(b.getOrientation()))
-					{
-						desiredDirection = b.getOrientation();
+					List<Direction> freeDirections = extractFreeDirections(perception);
+					if (!freeDirections.isEmpty()) {
+						if (freeDirections.contains(b.getOrientation()))
+						{
+							desiredDirection = b.getOrientation();
+						}
+						else
+						{
+							desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
+						}
 					}
-					else
-					{
-						desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
-					}
-				}
+				
 			}
 		
 			// If the Lemmings decided to move, try to move the body accordingly.

@@ -88,7 +88,6 @@ public class Environment {
 		}
 		this.grid[parser.endAreax][parser.endAreay] = new EndArea();
 		
-		
 		/**
 		 * Bord de la carte
 		 */
@@ -219,48 +218,47 @@ public class Environment {
 
 	public void move(Body body, Direction dir) {
 		Point position = getPosition(body);
-		if (position!=null) {
+		if (position!=null && dir!=null) {
 			int x = position.x + dir.dx;
 			int y = position.y + dir.dy;
-
 			if ((x!=position.x || y!=position.y)
 					&&
 					x>=0 &&
 					x<this.width &&
 					y>=0 &&
 					y<this.height) {
-				//si case en dessous du lemmings est libre == chute
-				if(isFree(position.x, position.y+1))
-				{
-					body.setFall(true);
-				}
-				else
-				{
-					body.setFall(false);
-				}
-				
-				if (!body.isFall() && isFree(x,y)) {
-					this.grid[x][y] = body;
-					this.grid[position.x][position.y] = null;
-					body.setOrientation(dir);
-					
-				}
-				else
-				{
-					if(isEndArea(x, y))
+					//si case en dessous du lemmings est libre == chute
+					if(isFree(position.x, position.y+1))
 					{
-						System.out.println("Lemmings arrivé !! ");
-						//suppression du body dans la grille
-						this.grid[position.x][position.y] = null;
-						setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
+						body.setFall(true);
 					}
 					else
 					{
-						this.grid[position.x][y+1] = body;
+						body.setFall(false);
+					}
+					
+					if (!body.isFall() && isFree(x,y)) {
+						this.grid[x][y] = body;
 						this.grid[position.x][position.y] = null;
 						body.setOrientation(dir);
+						
 					}
-				}
+					else
+					{
+						if(isEndArea(x, y))
+						{
+							System.out.println("Lemmings arrivé !! ");
+							//suppression du body dans la grille
+							this.grid[position.x][position.y] = null;
+							setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
+						}
+						else
+						{
+							this.grid[position.x][y+1] = body;
+							this.grid[position.x][position.y] = null;
+							body.setOrientation(dir);
+						}
+					}
 			}
 		}
 	}
@@ -327,7 +325,6 @@ public class Environment {
 					}
 				}
 			}
-
 		}
 		return list;
 	}

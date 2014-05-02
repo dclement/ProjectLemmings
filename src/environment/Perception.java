@@ -61,5 +61,5 @@ public class Perception {
 	public boolean isLemmings() {
 		return this.isLemmings;
 	}
-
+	
 }

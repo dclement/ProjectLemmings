@@ -159,7 +159,5 @@ public class XMLParser{
 		spy = Integer.valueOf(elementEnv.getAttribute("y"));
 		numberLemmings = Integer.valueOf(elementEnv.getAttribute("numberLemmings"));
 			
-	}
-	
-	
+	}	
 }
