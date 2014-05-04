@@ -14,9 +14,17 @@
 	<Wall x="6" y="8" width="1" height="1">
 	    </Wall>
 	<Wall x="7" y="9" width="1" height="1">
-	    </Wall>
+	    </Wall> 
 	<Wall x="8" y="10" width="9" height="1">
 	    </Wall>
+	<Jump x="17" y="10" width="1" height="1">
+	    </Jump>
+	<Jump x="18" y="9" width="1" height="1">
+	    </Jump>
+	<Wall x="19" y="8" width="1" height="0">
+	    </Wall>         
+	<Wall x="11" y="8" width="1" height="0">
+	    </Wall>    
 	<Wall x="17" y="14" width="1" height="0">
 	    </Wall>
 	<Wall x="20" y="10" width="3" height="0">

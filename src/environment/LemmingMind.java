@@ -33,10 +33,14 @@ public class LemmingMind implements Entity<LemmingsBody> {
 			List<Direction> freeDirections = new ArrayList<Direction>();
 			freeDirections.addAll(Arrays.asList(Direction.values()));
 			for(Perception obj : list) {
-				if (obj.getDistance()<=1) {
+				if (obj.getDistance()<=1 && obj.getHauteur()==0) {
 					freeDirections.remove(obj.getDirection());
 				}
 			}
+			freeDirections.remove(Direction.NORTHEAST);
+			freeDirections.remove(Direction.NORTHWEST);
+			freeDirections.remove(Direction.SOUTH);
+			freeDirections.remove(Direction.NORTH);
 			return freeDirections;
 		}
 		
@@ -54,11 +58,20 @@ public class LemmingMind implements Entity<LemmingsBody> {
 			return null;
 		}
 				
+		private boolean jumpAvailable(List<Perception> list){
+			boolean etat = false;
+			for(Perception obj : list) {
+				if (obj.getDistance()<=1 && obj.getHauteur()==1 && obj.isJump()) {
+					etat = true;
+				}
+			}
+			return etat;
+		}
+		
 		@Override
 		public void live() {
 			// Get the ghost body
 			LemmingsBody b = getBody();
-		
 			// Get the perceptions from the body.
 			List<Perception> perception = b.perceive();
 			
@@ -74,6 +87,13 @@ public class LemmingMind implements Entity<LemmingsBody> {
 			else {
 					List<Direction> freeDirections = extractFreeDirections(perception);
 					if (!freeDirections.isEmpty()) {
+						if(jumpAvailable(perception))
+						{
+							System.out.println("OKKKKKKKKK ");
+							desiredDirection = Direction.NORTHEAST;
+						}
+						else
+						{
 						if (freeDirections.contains(b.getOrientation()))
 						{
 							desiredDirection = b.getOrientation();
@@ -82,14 +102,24 @@ public class LemmingMind implements Entity<LemmingsBody> {
 						{
 							desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
 						}
+						}
 					}
-				
 			}
 		
 			// If the Lemmings decided to move, try to move the body accordingly.
 			if (desiredDirection!=null)
+			{
+				System.out.println("Direction " + desiredDirection);
 				b.move(desiredDirection);
-			
+			}
+			else
+			{
+				//Update body if body is falling
+				if(b.isFall())
+				{
+					b.move(desiredDirection);
+				}
+			}
 		}
 
 }

@@ -48,13 +48,13 @@ public class SpawnerLemmings  extends Thread{
 		
 	}
 	
-	public void spawn()
+	public synchronized void spawn()
 	{
 		System.out.println("spawn  " + numberLemmingsLeft);
 		if(this.numberLemmingsLeft>0)
 		{
 			//position x, position y, distance perception, direction départ, lemmings chute d'une case au depart
-			LemmingsBody body = this.e.addLemmings(this.posx, this.posy, 2, Direction.random(), true);
+			LemmingsBody body = this.e.addLemmings(this.posx, this.posy, 1, Direction.EAST, true);
 			LemmingMind Lem = new LemmingMind(body);
 			Lemmings.add(Lem);
 			this.numberLemmingsLeft--;

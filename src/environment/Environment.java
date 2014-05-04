@@ -71,7 +71,6 @@ public class Environment {
 		// Generation de carte par fichier externe xml par exemple
 		int x,y;
 		
-		//creation de la zone de fin
 		ArrayList<Position> list = parser.Walls;
 		for(Position p :list)
 		{
@@ -87,7 +86,11 @@ public class Environment {
 			}
 		}
 		this.grid[parser.endAreax][parser.endAreay] = new EndArea();
-		
+		ArrayList<Position> listJump = parser.Jump;
+		for(Position p :listJump)
+		{
+			this.grid[p.getX()][p.getY()]=new Jump();
+		}
 		/**
 		 * Bord de la carte
 		 */
@@ -216,7 +219,7 @@ public class Environment {
 				&& this.grid[x][y]!=null && this.grid[x][y].isPickable());
 	}
 
-	public void move(Body body, Direction dir) {
+	public synchronized void move(Body body, Direction dir) {
 		Point position = getPosition(body);
 		if (position!=null && dir!=null) {
 			int x = position.x + dir.dx;
@@ -240,8 +243,15 @@ public class Environment {
 					if (!body.isFall() && isFree(x,y)) {
 						this.grid[x][y] = body;
 						this.grid[position.x][position.y] = null;
-						body.setOrientation(dir);
-						
+						if (dir.name().contains("EAST"))
+						{
+							body.setOrientation(Direction.EAST);
+						}
+						else if(dir.name().contains("WEST"))
+							{
+								body.setOrientation(Direction.WEST);
+							}
+						//body.setOrientation(dir);
 					}
 					else
 					{
@@ -254,11 +264,32 @@ public class Environment {
 						}
 						else
 						{
+							//Lemmings en chûte
 							this.grid[position.x][y+1] = body;
 							this.grid[position.x][position.y] = null;
-							body.setOrientation(dir);
 						}
 					}
+			}
+		}
+		else
+		{
+			//Direction lemmings null mais le corps est peut etre en levitation 
+			if(position!=null)
+			{
+				//si case en dessous du lemmings est libre == chute
+				if(isFree(position.x, position.y+1))
+				{
+					body.setFall(true);
+				}
+				else
+				{
+					body.setFall(false);
+				}
+				
+				if (body.isFall() && isFree(position.x,position.y+1)) {
+					this.grid[position.x][position.y+1] = body;
+					this.grid[position.x][position.y] = null;
+				}
 			}
 		}
 	}
@@ -307,7 +338,7 @@ public class Environment {
 			Perception perception;
 
 			for(int i=1; i<=distance; i++) {
-				for(Direction direction : directions) {
+				for(Direction direction : directions) {			
 					if (sets.get(direction.ordinal())) {
 						x = position.x + (direction.dx * i);
 						y = position.y + (direction.dy * i);
@@ -316,8 +347,10 @@ public class Environment {
 									isWall(x,y),
 									direction,
 									i,
+									direction.dy,
 									isEndArea(x, y),
-									isLemmings(x,y));
+									isLemmings(x,y),
+									isJump(x, y));
 							list.add(perception);
 							if (isOccluder(x, y))
 								sets.clear(direction.ordinal());
@@ -335,6 +368,11 @@ public class Environment {
 
 	public void setTotalLemmingsFinish(int totalLemmingsFinish) {
 		this.totalLemmingsFinish = totalLemmingsFinish;
+	}
+
+	public synchronized boolean isJump(int x, int y) {
+		return (x>=0 && y>=0 && x<this.width && y<this.height
+				&& (this.grid[x][y] instanceof Jump));
 	}
 
 	
