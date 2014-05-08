@@ -3,26 +3,39 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import environment.Environment;
+import environment.EnvironmentObject;
 
 /**
  * GUI classe
  * @author Clement
  *
  */
-public class LemmingsGUI extends JFrame implements KeyListener {
+public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 
 	private static final long serialVersionUID = -3354644983761730596L;
 	
@@ -40,7 +53,12 @@ public class LemmingsGUI extends JFrame implements KeyListener {
 	public static final int DEMI_CELL_HEIGHT = CELL_HEIGHT/2;
 	
 	private final Environment environment;
-	
+	private JMenuBar menuBar;
+	private JMenu menu;
+	private JPanel UserInterface;
+	private String newEnvironmentObject = null;
+	private JButton bWall;
+	private JButton bJump;
 	/**
 	 * 
 	 * @param env is the environment to display.
@@ -49,19 +67,72 @@ public class LemmingsGUI extends JFrame implements KeyListener {
 		this.environment = env;
 				
 		GridPanel gp = new GridPanel();
+		gp.addMouseListener(this);
 		gp.setPreferredSize(new Dimension(
 				CELL_WIDTH*this.environment.getWidth(),
 				CELL_HEIGHT*this.environment.getHeight()));
 		
 		JScrollPane sc = new JScrollPane(gp);
+		menuBar = new JMenuBar();
+		menu = new JMenu("User Interface");
+		menuBar.add(menu);
+		menu.addMenuListener(new MenuListener() {
 		
+		@Override
+		public void menuSelected(MenuEvent e) {
+			// TODO Auto-generated method stub
+			if(UserInterface.isVisible())
+			{
+				UserInterface.setVisible(false);
+			}
+			else
+			{	
+				UserInterface.setVisible(true);
+			}
+			
+		}
+		
+		@Override
+		public void menuDeselected(MenuEvent e) {
+			// TODO Auto-generated method stub
+		}
+		
+		@Override
+		public void menuCanceled(MenuEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	});
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(BorderLayout.CENTER, sc);
 		setPreferredSize(new Dimension(600,600));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Lemmings Game");
 		pack();
-
+		this.setJMenuBar(menuBar);
+		UserInterface = new JPanel();
+		bWall = new JButton("Wall");
+		bWall.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+    		 	newEnvironmentObject = "environment.Wall";
+       		}
+        });      
+ 
+		bJump = new JButton("Jump");
+		bJump.addActionListener(new ActionListener() {
+			 
+            public void actionPerformed(ActionEvent e)
+            {
+    		 	newEnvironmentObject = "environment.Jump";
+       		}
+        });      
+		UserInterface.setLayout(new GridLayout(4,1));
+		UserInterface.add(bWall);
+		UserInterface.add(bJump);
+		getContentPane().add(BorderLayout.EAST, UserInterface);
+		UserInterface.setVisible(false);
 		addKeyListener(this);
 	}
 
@@ -69,7 +140,7 @@ public class LemmingsGUI extends JFrame implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_LEFT:
-			
+		
 			break;
 		case KeyEvent.VK_RIGHT:
 			
@@ -137,5 +208,70 @@ public class LemmingsGUI extends JFrame implements KeyListener {
 		}
 		
 	}
-	
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		  //Relative coordonnate
+		  int x=e.getX();
+		  int y=e.getY();
+		  //Coordonnate of the grid
+		  x=x/CELL_WIDTH;
+		  y=y/CELL_HEIGHT;
+		  //Remove object
+		  if(LemmingsGUI.this.environment.isWall(x, y) || LemmingsGUI.this.environment.isJump(x, y))
+		  {
+			  EnvironmentObject remplacement = null;
+			  LemmingsGUI.this.environment.userEnvironnementChange(remplacement,x,y);
+		  }
+		  else
+		  {
+			  if(LemmingsGUI.this.environment.isFree(x, y) && newEnvironmentObject!=null)
+			  {
+				  Class cls = null;
+				try {
+					cls = Class.forName(newEnvironmentObject);
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				Object clsInstance = null;
+				  try {
+					  clsInstance = (Object) cls.newInstance();
+				} catch (InstantiationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IllegalAccessException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				EnvironmentObject remplacement = (EnvironmentObject)clsInstance;
+				LemmingsGUI.this.environment.userEnvironnementChange(remplacement,x,y);
+			  }
+		  }
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

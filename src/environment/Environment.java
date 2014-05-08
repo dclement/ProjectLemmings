@@ -375,7 +375,10 @@ public class Environment {
 				&& (this.grid[x][y] instanceof Jump));
 	}
 
-	
+	public synchronized void userEnvironnementChange(EnvironmentObject remplacement, int x, int y)
+	{
+		this.grid[x][y] = remplacement;
+	}
 
 
 
