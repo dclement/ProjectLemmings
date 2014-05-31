@@ -74,6 +74,7 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		
 		JScrollPane sc = new JScrollPane(gp);
 		menuBar = new JMenuBar();
+				
 		menu = new JMenu("User Interface");
 		menuBar.add(menu);
 		menu.addMenuListener(new MenuListener() {
@@ -102,7 +103,7 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 			// TODO Auto-generated method stub
 			
 		}
-	});
+		});
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(BorderLayout.CENTER, sc);
 		setPreferredSize(new Dimension(600,600));

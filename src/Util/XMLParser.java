@@ -103,31 +103,19 @@ public class XMLParser{
 					if (subnode.getNodeType() == Node.ELEMENT_NODE) {
 						if (subnode.getNodeName().equals("Spawner")) 
 						{
-							if(subnode.hasChildNodes())
-							{
-								xmlSpawner(subnode);
-							}
+							xmlSpawner(subnode);
 						}
 						if (subnode.getNodeName().equals("Wall")) 
 						{
-							if(subnode.hasChildNodes())
-							{
-								xmlWalls(subnode);
-							}
+							xmlWalls(subnode);
 						}
 						if (subnode.getNodeName().equals("Jump")) 
 						{
-							if(subnode.hasChildNodes())
-							{
-								xmlJump(subnode);
-							}
+							xmlJump(subnode);
 						}
 						if (subnode.getNodeName().equals("Endarea")) 
 						{
-							if(subnode.hasChildNodes())
-							{
-								xmlEndarea(subnode);
-							}
+							xmlEndarea(subnode);
 						}
 					}
 				}

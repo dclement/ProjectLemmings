@@ -2,7 +2,7 @@
 package environment;
 
 public interface Entity<BT extends Body> {
-
+	
 	/** Run the living behavior of the entity for one simulation step.
 	 */
 	public void live();

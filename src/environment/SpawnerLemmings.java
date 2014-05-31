@@ -10,7 +10,7 @@ import java.util.TimerTask;
  * @author Clement
  *
  */
-public class SpawnerLemmings  extends Thread{
+public class SpawnerLemmings extends Thread{
 	/**
 	 * Nombre d'agents a spawn
 	 */
@@ -21,7 +21,7 @@ public class SpawnerLemmings  extends Thread{
 	public int posx;
 	public int posy;
 	public Environment e;
-	private final List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
+	private List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
 			
 	public SpawnerLemmings(int lemmingsCount, Environment env, int posx, int posy) {
 		this.numberLemmingsLeft = lemmingsCount;

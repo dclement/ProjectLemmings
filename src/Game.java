@@ -1,5 +1,9 @@
 
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,6 +12,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,6 +26,7 @@ import environment.LemmingMind;
 import environment.LemmingsBody;
 import environment.SpawnerLemmings;
 import gui.LemmingsGUI;
+import gui.StartGUI;
 
 /**
  * Classe principale
@@ -33,10 +39,24 @@ public class Game {
 	private final AtomicBoolean stop = new AtomicBoolean(false);
 	private SpawnerLemmings sp;
 	private static XMLParser parser;
+	public static StartGUI FrameStart;
 	/**
 	 * Constructeur du jeu
 	 */
-	public Game() {
+	public Game(String fileIn) {
+		parser = new XMLParser();
+		try {
+			parser.readXML(fileIn);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.environment = new Environment(parser.width,parser.height,parser);
 		sp = new SpawnerLemmings(parser.numberLemmings, environment, parser.spx, parser.spy);
 	}
@@ -48,6 +68,7 @@ public class Game {
 		JFrame window = createGUI();
 		
 		if (window!=null) window.setVisible(true);
+
 		//Lancement du thread de creation des agents
 		Thread T = new Thread(sp);
 		T.start();		
@@ -60,7 +81,7 @@ public class Game {
 			{
 				//Live des agents
 				for(LemmingMind Lem : sp.getLemmingList()) {
-					Lem.live();
+						Lem.live();
 				}
 				
 			}
@@ -88,16 +109,19 @@ public class Game {
 		return new LemmingsGUI(this.environment);
 	}
 	
-	/**
-	 * @param args are the command line arguments
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-	 */
+/*
 	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-		parser = new XMLParser();
+		/*parser = new XMLParser();
 		
+		FrameStart = new StartGUI();
+		if (FrameStart!=null) FrameStart.setVisible(true);
+		while(!FrameStart.StartSimulation)
+		{
+			System.out.println("Wait launch");
+		}
+		FrameStart.setVisible(false);*/
 		//Recherche du xml de creation du monde par l'utilisateur
+	/*
 		InputStream is;
 		JFrame guiFrame = new JFrame();
 		final JFileChooser fc = new JFileChooser();
@@ -111,10 +135,14 @@ public class Game {
 		}
 		System.out.println("file " + fileIn);
 		//Parse le fichier xml
-		parser.readXML(fileIn);
-		Game game = new Game();
-		game.run();
+		if(fileIn!=null)
+		{
+			parser.readXML(fileIn);
+			Game game = new Game();
+			game.run();
+		}
 		System.exit(0);
-	}
+		
+	}*/
 	
 }

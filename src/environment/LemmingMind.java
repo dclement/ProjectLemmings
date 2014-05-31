@@ -5,14 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-
 /**
  * Lemmings esprit
  * @author Clement
  *
  */
 public class LemmingMind implements Entity<LemmingsBody> {
-		
+
 		private final LemmingsBody body;
 		private final Random rnd = new Random();
 
