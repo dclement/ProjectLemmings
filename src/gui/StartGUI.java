@@ -9,17 +9,23 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -42,6 +48,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.arakhne.afc.vmutil.Resources;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -72,7 +79,11 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	 */
 	public static final int DEMI_CELL_HEIGHT = CELL_HEIGHT/2;
 	
-	
+	private BufferedImage Wall_img = null;
+	private BufferedImage Spawner_img = null;
+	private BufferedImage Jump_img = null;
+	private BufferedImage EndArea_img = null;
+
 	private JMenuBar menuBar;
 	private JMenu play;
 	private JMenu menu;
@@ -89,12 +100,57 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	private String newEnvironmentObject = null;
 	private int width = 28;
 	private int height = 28;
+	private int countSpawner = 0;
+	private int countEndarea = 0;
 	/**
 	 * 
 	 * @param env is the environment to display.
 	 */
 	public StartGUI() {
+		
+		 
+		try {
+			BufferedImage Wall_img_tmp = ImageIO.read(new File(getClass().getResource("mur.png").toURI()));
+		  	Wall_img= resizeImage(Wall_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Spawner_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+	    	Spawner_img= resizeImage(Spawner_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Jump_img_tmp = ImageIO.read(new File(getClass().getResource("jump.png").toURI()));
+	    	Jump_img= resizeImage(Jump_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage EndArea_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+	    	EndArea_img= resizeImage(EndArea_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		grid = new String[width][height];
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				grid[x][y]="";
+			}
+		}
 		GridPanel gp = new GridPanel();
 		gp.addMouseListener(this);
 		gp.setPreferredSize(new Dimension(
@@ -171,7 +227,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		}
 		
 		@Override
-		public void menuCanceled(MenuEvent e) {
+		public void menuCanceled(MenuEvent e) {	
 			// TODO Auto-generated method stub
 			
 		}
@@ -353,7 +409,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 			 
             public void actionPerformed(ActionEvent e)
             {
-    		 	newEnvironmentObject = null;
+    		 	newEnvironmentObject = "";
        		}
         });
 		UserInterface.setLayout(new GridLayout(4,1));
@@ -407,36 +463,40 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
-			System.out.println("paint");
 			int px, py;
 			Graphics2D g2d = (Graphics2D)g;
+			
 			if(grid!=null)
 			{
-			for(int x=0; x<width; x++) {
-				for(int y=0; y<height; y++) {
-					px = CELL_WIDTH * x;
-					py = CELL_HEIGHT * y;
-					if(grid[x][y]!=null)
-					{
-						if (grid[x][y].equalsIgnoreCase("Wall")) {
-							g2d.setColor(Color.BLUE);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
-						}
-						if (grid[x][y].equalsIgnoreCase("EndArea")) {
-							g2d.setColor(Color.RED);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
-						}
-						if (grid[x][y].equalsIgnoreCase("Jump")) {
-							g2d.setColor(Color.GREEN);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
-						}
-						if (grid[x][y].equalsIgnoreCase("Spawner")) {
-							g2d.setColor(Color.YELLOW);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+				for(int x=0; x<width; x++) {
+					for(int y=0; y<height; y++) {
+						px = CELL_WIDTH * x;
+						py = CELL_HEIGHT * y;
+						if(grid[x][y]!=null)
+						{
+							if (grid[x][y].equalsIgnoreCase("Wall")) {
+								g2d.setColor(Color.BLUE);
+								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+								g2d.drawImage(Wall_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							}
+							if (grid[x][y].equalsIgnoreCase("EndArea")) {
+								g2d.setColor(Color.RED);
+								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+								g2d.drawImage(EndArea_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							}
+							if (grid[x][y].equalsIgnoreCase("Jump")) {
+								g2d.setColor(Color.GREEN);
+								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+								g2d.drawImage(Jump_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							}
+							if (grid[x][y].equalsIgnoreCase("Spawner")) {
+								g2d.setColor(Color.YELLOW);
+								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+								g2d.drawImage(Spawner_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							}
 						}
 					}
 				}
-			}
 			}	
 				
 			
@@ -453,8 +513,8 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		  //Coordonnate of the grid
 		  x=x/CELL_WIDTH;
 		  y=y/CELL_HEIGHT;
+	
 		  grid[x][y] = newEnvironmentObject;
-		  System.out.println("element " + newEnvironmentObject + "position " + x  + " " + y);
 		  repaint();
 	}
 
@@ -486,6 +546,16 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	{
 		return this.StartSimulation;
 	}
+	
+	public BufferedImage resizeImage(BufferedImage image, int width, int height) {
+       int type=0;
+       type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();
+       BufferedImage resizedImage = new BufferedImage(width, height,type);
+       Graphics2D g = resizedImage.createGraphics();
+       g.drawImage(image, 0, 0, width, height, null);
+       g.dispose();
+       return resizedImage;
+    }
 	
 	
 }

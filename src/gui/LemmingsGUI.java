@@ -16,7 +16,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -59,6 +64,13 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 	private String newEnvironmentObject = null;
 	private JButton bWall;
 	private JButton bJump;
+	
+	private BufferedImage Wall_img = null;
+	private BufferedImage Spawner_img = null;
+	private BufferedImage Lemming_img = null;
+	private BufferedImage Jump_img = null;
+	private BufferedImage EndArea_img = null;
+	
 	/**
 	 * 
 	 * @param env is the environment to display.
@@ -66,6 +78,52 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 	public LemmingsGUI(Environment env) {
 		this.environment = env;
 				
+		try {
+			BufferedImage Wall_img_tmp = ImageIO.read(new File(getClass().getResource("mur.png").toURI()));
+		  	Wall_img= resizeImage(Wall_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Spawner_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+			Spawner_img= resizeImage(Spawner_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Jump_img_tmp = ImageIO.read(new File(getClass().getResource("jump.png").toURI()));
+	    	Jump_img= resizeImage(Jump_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage EndArea_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+	    	EndArea_img= resizeImage(EndArea_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Lemming_img_tmp = ImageIO.read(new File(getClass().getResource("Lemming.png").toURI()));
+	    	Lemming_img= resizeImage(Lemming_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		GridPanel gp = new GridPanel();
 		gp.addMouseListener(this);
 		gp.setPreferredSize(new Dimension(
@@ -189,19 +247,23 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 						py = CELL_HEIGHT * y;
 						if (LemmingsGUI.this.environment.isWall(x,y)) {
 							g2d.setColor(Color.BLUE);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							g2d.drawImage(Wall_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 						if (LemmingsGUI.this.environment.isLemmings(x, y)) {
 							g2d.setColor(Color.YELLOW);
-							g2d.fillOval(px, py, 10, 10);
+							g2d.drawImage(Lemming_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							//g2d.fillOval(px, py, 10, 10);
 						}
 						if (LemmingsGUI.this.environment.isEndArea(x,y)) {
 							g2d.setColor(Color.RED);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							g2d.drawImage(EndArea_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 						if (LemmingsGUI.this.environment.isJump(x,y)) {
 							g2d.setColor(Color.GREEN);
-							g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
+							g2d.drawImage(Jump_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 					}
 				}
@@ -274,5 +336,14 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	public BufferedImage resizeImage(BufferedImage image, int width, int height) {
+	       int type=0;
+	       type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();
+	       BufferedImage resizedImage = new BufferedImage(width, height,type);
+	       Graphics2D g = resizedImage.createGraphics();
+	       g.drawImage(image, 0, 0, width, height, null);
+	       g.dispose();
+	       return resizedImage;
 	}
 }
