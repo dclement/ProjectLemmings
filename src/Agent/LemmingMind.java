@@ -1,33 +1,40 @@
-package environment;
+package Agent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.janusproject.kernel.status.Status;
+import org.janusproject.kernel.status.StatusFactory;
+
+import environment.Body;
+import environment.Direction;
+import environment.Entity;
+import environment.Environment;
+import environment.MotionInfluence;
+import environment.Perception;
+
+
 /**
  * Lemmings esprit
  * @author Clement
  *
  */
-public class LemmingMind implements Entity<LemmingsBody> {
 
-		private final LemmingsBody body;
+
+public class LemmingMind  extends Animat<LemmingsBody> {
+
 		private final Random rnd = new Random();
 
 		/**
 		 * @param body is the body to attached to this ghost.
 		 */
-		public LemmingMind(LemmingsBody body) {
-			this.body = body;
+				
+		public LemmingMind() {
+			// TODO Auto-generated constructor stub
 		}
-		
 
-		@Override
-		public LemmingsBody getBody() {
-			return this.body;
-		}
-		
 		private List<Direction> extractFreeDirections(List<Perception> list) {
 			List<Direction> freeDirections = new ArrayList<Direction>();
 			freeDirections.addAll(Arrays.asList(Direction.values()));
@@ -68,11 +75,11 @@ public class LemmingMind implements Entity<LemmingsBody> {
 		}
 		
 		@Override
-		public void live() {
-			// Get the ghost body
-			LemmingsBody b = getBody();
+		public Status live() {
+			
+			
 			// Get the perceptions from the body.
-			List<Perception> perception = b.perceive();
+			List<Perception> perception = this.getPerceivedObjects();
 			
 			Direction desiredDirection = null;
 					
@@ -81,21 +88,20 @@ public class LemmingMind implements Entity<LemmingsBody> {
 			
 			if (EndAreaTracking!=null) {
 				// See the EndArea
-				desiredDirection = EndAreaTracking.getDirection();	
+				desiredDirection = EndAreaTracking.getDirection();
 			}
 			else {
 					List<Direction> freeDirections = extractFreeDirections(perception);
 					if (!freeDirections.isEmpty()) {
 						if(jumpAvailable(perception))
 						{
-							System.out.println("OKKKKKKKKK ");
 							desiredDirection = Direction.NORTHEAST;
 						}
 						else
 						{
-						if (freeDirections.contains(b.getOrientation()))
+						if (freeDirections.contains(getOrientation()))
 						{
-							desiredDirection = b.getOrientation();
+							desiredDirection = getOrientation();
 						}
 						else
 						{
@@ -104,21 +110,34 @@ public class LemmingMind implements Entity<LemmingsBody> {
 						}
 					}
 			}
-		
+
+			System.out.println(this.getAddress().toString() + " is Alive");
+			System.out.println("DesiredDirection " + desiredDirection);
 			// If the Lemmings decided to move, try to move the body accordingly.
 			if (desiredDirection!=null)
 			{
-				System.out.println("Direction " + desiredDirection);
-				b.move(desiredDirection);
+				this.setMotionInfluence(new MotionInfluence(desiredDirection));
 			}
 			else
-			{
+			{ // la je comprend pas tout =°
+				this.setMotionInfluence(new MotionInfluence(desiredDirection));
+				//influeence
 				//Update body if body is falling
-				if(b.isFall())
+				
+				if(isFalling())
 				{
-					b.move(desiredDirection);
+					this.setMotionInfluence(new MotionInfluence(desiredDirection));
 				}
 			}
+			
+			return StatusFactory.ok(this);
+		}
+
+
+		@Override
+		protected LemmingsBody createBody(Environment env) {
+			return new LemmingsBody(getAddress(),env, 4, Direction.EAST,true);			// max angular acceleration (r/s)/s
+			
 		}
 
 }

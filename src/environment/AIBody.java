@@ -3,6 +3,8 @@ package environment;
 
 import java.util.List;
 
+import org.janusproject.kernel.address.AgentAddress;
+
 public abstract class AIBody extends Body {
 
 	/** Is the perception distance.
@@ -14,8 +16,8 @@ public abstract class AIBody extends Body {
 	 * @param distance is the maximal distance of perception of the artificial intelligence.
 	 * @param direction is the initial direction of the body.
 	 */
-	public AIBody(Environment env, int distance, Direction direction, boolean fall) {
-		super(env, direction, fall);
+	public AIBody(AgentAddress address, Environment env, int distance, Direction direction, boolean fall) {
+		super(address, env, direction, fall);
 		this.distance = distance;
 	}	
 
@@ -35,5 +37,7 @@ public abstract class AIBody extends Body {
 		Environment e = getEnvironment();
 		return e.perceive(this);
 	}
+	
+	
 	
 }

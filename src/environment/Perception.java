@@ -13,6 +13,8 @@ public class Perception {
 	
 	public Perception(boolean wall, Direction direction, int distance, int hauteur, boolean endArea, boolean Lemmings, boolean Jump) {
 		
+		
+		PerceptionType type;
 		this.isWall = wall;
 		this.direction = direction;
 		this.distance = distance;

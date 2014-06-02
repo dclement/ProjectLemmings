@@ -4,10 +4,21 @@ package environment;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.janusproject.kernel.Kernel;
+import org.janusproject.kernel.address.AgentAddress;
+import org.janusproject.kernel.agent.Kernels;
+import org.janusproject.kernel.util.random.RandomNumber;
+
+import Agent.LemmingsBody;
 import Util.Position;
 import Util.XMLParser;
 
@@ -18,6 +29,10 @@ import Util.XMLParser;
  */
 public class Environment {
 
+	private final AtomicBoolean changed = new AtomicBoolean();
+
+	
+	
 	/** Event listeners.
 	 */
 	private final List<GameListener> listeners = new ArrayList<GameListener>();
@@ -37,6 +52,8 @@ public class Environment {
 	 */
 	private final int height;
 
+	private final Map<AgentAddress,Body> bodies = new TreeMap<AgentAddress,Body>();
+	
 	/**
 	 * Ressource contenant les données de l'environnement a creer
 	 */
@@ -107,7 +124,7 @@ public class Environment {
 		}
 	}
 
-	/** Replies if the environment has a even value for its loop step counter.
+	/** Replies if the environment has an even value for its loop step counter.
 	 * 
 	 * @return <code>true</code> if the simulation is even, <code>false</code>
 	 * if it is odd.
@@ -233,14 +250,14 @@ public class Environment {
 					//si case en dessous du lemmings est libre == chute
 					if(isFree(position.x, position.y+1))
 					{
-						body.setFall(true);
+						body.setFalling(true);
 					}
 					else
 					{
-						body.setFall(false);
+						body.setFalling(false);
 					}
 					
-					if (!body.isFall() && isFree(x,y)) {
+					if (!body.isFalling() && isFree(x,y)) {
 						this.grid[x][y] = body;
 						this.grid[position.x][position.y] = null;
 						if (dir.name().contains("EAST"))
@@ -279,27 +296,73 @@ public class Environment {
 				//si case en dessous du lemmings est libre == chute
 				if(isFree(position.x, position.y+1))
 				{
-					body.setFall(true);
+					body.setFalling(true);
 				}
 				else
 				{
-					body.setFall(false);
+					body.setFalling(false);
 				}
 				
-				if (body.isFall() && isFree(position.x,position.y+1)) {
+				if (body.isFalling() && isFree(position.x,position.y+1)) {
 					this.grid[position.x][position.y+1] = body;
 					this.grid[position.x][position.y] = null;
 				}
 			}
 		}
 	}
+	//TODO en vrai je comprend pas à quoi servent ces environments Change et init.getAndSet blablabla
+	public void runBehaviour() {
+	
+		
+	/*	if (this.init.getAndSet(false)) {
+			fireEnvironmentChange();
+		}
+	*/
+		
+		for(Body body : this.bodies.values()){
+			MotionInfluence mi = body.consumeInfluence();
+			if(mi!=null){
+				this.move(body, mi.direction);
+				
+			}
+		}
+		
+		/* Code original 
+		Collection<MotionInfluence> influences = new ArrayList<MotionInfluence>();
+		MotionInfluence influence;
+		
+		
+		for(Body body : this.bodies.values()) {
+			influence = body.consumeInfluence();
+			if (influence!=null) {
+				influences.add(influence);
+			}
+		}
+		
+		if (!influences.isEmpty()) {
+			this.changed.set(false); // 
+			applyInfluences(influences, this.timeManager);
+			if (this.changed.get()) {
+				fireEnvironmentChange();
+			}
+		}*/
+		
+		List<Perception> list;
+		for(Body body : this.bodies.values()) {
+			list = perceive((AIBody) body);
+			if (list==null) list = Collections.emptyList();
+			body.setPerceptions(list);
+		}
+	}
+	
 
-	//TODO
+	
+	/*
 	public synchronized LemmingsBody addLemmings(int x, int y, int distance, Direction direction, boolean fall) {
 		LemmingsBody body = new LemmingsBody(this, distance, direction, fall);
 		this.grid[x][y] = body;
 		return body;
-	}
+	}/*
 
 	/** Retreive and reply the position of the given body.
 	 * 
@@ -307,7 +370,7 @@ public class Environment {
 	 * @return the position; or <code>null</code> if the body
 	 * was not found.
 	 */
-	private Point getPosition(Body body) {
+	public Point getPosition(Body body) {
 		for(int x=0; x<this.width; x++) {
 			for(int y=0; y<this.height; y++) {
 				if (this.grid[x][y]==body) {
@@ -378,6 +441,23 @@ public class Environment {
 	public synchronized void userEnvironnementChange(EnvironmentObject remplacement, int x, int y)
 	{
 		this.grid[x][y] = remplacement;
+	}
+
+	public void killAgentBody(AgentAddress agent) {
+		// TODO Kill Body
+	}
+
+	public void spawnAgentBody(Agent.Animat<?> animat, Point position) {
+		if (animat!=null) {
+			Body body = animat.spawnBody(this);
+			if (body!=null) {
+				
+				body.setPosition(position.x,position.y);
+				this.grid[position.x][position.y]=body;
+				this.bodies.put(animat.getAddress(), body);
+			}
+		}
+		
 	}
 
 

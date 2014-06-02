@@ -1,7 +1,9 @@
+package launcher;
 
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -19,12 +21,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import Agent.LemmingMind;
+import Agent.LemmingsBody;
+import Agent.SpawnerLemmings;
 import Util.XMLParser;
 import environment.Direction;
 import environment.Environment;
-import environment.LemmingMind;
-import environment.LemmingsBody;
-import environment.SpawnerLemmings;
 import gui.LemmingsGUI;
 import gui.StartGUI;
 
@@ -40,6 +42,10 @@ public class Game {
 	private SpawnerLemmings sp;
 	private static XMLParser parser;
 	public static StartGUI FrameStart;
+	
+	public final int EXECUTION_DELAY = 200;
+	private LemmingsGUI GUI;
+	
 	/**
 	 * Constructeur du jeu
 	 */
@@ -57,15 +63,25 @@ public class Game {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		
 		this.environment = new Environment(parser.width,parser.height,parser);
+		JFrame window = createGUI();
+		FrameworkLauncher.launchEnvironment(environment, this.GUI, EXECUTION_DELAY);
+		
 		sp = new SpawnerLemmings(parser.numberLemmings, environment, parser.spx, parser.spy);
+		LemmingMind lem = new LemmingMind();
+		FrameworkLauncher.startSimulation();
+		
 	}
 	
 	/** Run the Lemmings game.
 	 */
 	public void run() {
 		
-		JFrame window = createGUI();
+		
+		
+		JFrame window = this.GUI;
 		
 		if (window!=null) window.setVisible(true);
 
@@ -74,9 +90,10 @@ public class Game {
 		T.start();		
 		
 		
-		
+		//TODO since we now run a JANUS kernel, we shouldn't need this anymore
 		while (!this.stop.get()) {
 			//Y a t il des agents ?
+			/*
 			if(!sp.getLemmingList().isEmpty())
 			{
 				//Live des agents
@@ -92,7 +109,7 @@ public class Game {
 			catch (InterruptedException e) {
 				return;
 			}
-			
+			*/
 			if (window!=null) window.repaint();
 		}
 		
@@ -106,7 +123,9 @@ public class Game {
 	 * @return the UI object.
 	 */
 	protected JFrame createGUI() {
-		return new LemmingsGUI(this.environment);
+		this.GUI = new LemmingsGUI(this.environment); 
+		return this.GUI;
+		
 	}
 	
 /*

@@ -1,9 +1,13 @@
-package environment;
+package Agent;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import environment.Environment;
+import launcher.FrameworkLauncher;
 
 /**
  * Class servant a creer les agents au meme endroit de la carte a interval de temps régulier
@@ -20,12 +24,12 @@ public class SpawnerLemmings extends Thread{
 	 */
 	public int posx;
 	public int posy;
-	public Environment e;
+	public Environment env;
 	private List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
 			
 	public SpawnerLemmings(int lemmingsCount, Environment env, int posx, int posy) {
 		this.numberLemmingsLeft = lemmingsCount;
-		this.e = env;
+		this.env = env;
 		this.posx = posx;
 		this.posy = posy;
 	}
@@ -54,9 +58,9 @@ public class SpawnerLemmings extends Thread{
 		if(this.numberLemmingsLeft>0)
 		{
 			//position x, position y, distance perception, direction départ, lemmings chute d'une case au depart
-			LemmingsBody body = this.e.addLemmings(this.posx, this.posy, 1, Direction.EAST, true);
-			LemmingMind Lem = new LemmingMind(body);
-			Lemmings.add(Lem);
+			LemmingMind lem = new LemmingMind();
+			FrameworkLauncher.launchAgent(lem,new Point(this.posx, this.posy));
+			Lemmings.add(lem);
 			this.numberLemmingsLeft--;
 		}
 	}

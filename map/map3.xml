@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+<environment height="28" width="28">
+<Wall height="0" width="0" x="3" y="7"/>
+<Wall height="0" width="0" x="3" y="8"/>
+<Wall height="0" width="0" x="3" y="9"/>
+<Spawner numberLemmings="15" x="4" y="6"/>
+<Wall height="0" width="0" x="4" y="9"/>
+<Wall height="0" width="0" x="5" y="9"/>
+<Wall height="0" width="0" x="6" y="9"/>
+<Wall height="0" width="0" x="7" y="9"/>
+<Jump height="1" width="1" x="8" y="9"/>
+<Wall height="0" width="0" x="9" y="8"/>
+<Wall height="0" width="0" x="10" y="8"/>
+<Wall height="0" width="0" x="10" y="11"/>
+<Wall height="0" width="0" x="10" y="12"/>
+<Wall height="0" width="0" x="11" y="12"/>
+<Wall height="0" width="0" x="11" y="13"/>
+<Wall height="0" width="0" x="12" y="14"/>
+<Wall height="0" width="0" x="13" y="14"/>
+<Wall height="0" width="0" x="14" y="14"/>
+<Wall height="0" width="0" x="15" y="14"/>
+<Endarea x="16" y="13"/>
+</environment>
+</config>

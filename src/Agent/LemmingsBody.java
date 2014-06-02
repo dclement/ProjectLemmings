@@ -1,6 +1,12 @@
-package environment;
+package Agent;
 
 import java.util.List;
+
+import org.janusproject.kernel.address.AgentAddress;
+
+import environment.AIBody;
+import environment.Direction;
+import environment.Environment;
 
 /**
  * Corps des lemmings
@@ -14,8 +20,8 @@ public class LemmingsBody extends AIBody {
 		 * @param distance is the maximal distance of perception of the artificial intelligence.
 		 * @param direction is the initial direction of the body.
 		 */
-		public LemmingsBody(Environment env, int distance, Direction direction, boolean fall) {
-			super(env, distance, direction, fall);
+		public LemmingsBody(AgentAddress address, Environment env, int distance, Direction direction, boolean fall) {
+			super(address, env, distance, direction, fall);
 		}
 		
 				

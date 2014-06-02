@@ -56,11 +56,8 @@ import org.xml.sax.SAXException;
 
 import Util.Position;
 import Util.XMLParser;
-import environment.EndArea;
 import environment.Environment;
 import environment.EnvironmentObject;
-import environment.Jump;
-import environment.Wall;
 
 /**
  * GUI classe
@@ -273,7 +270,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 				}
 				grid[parser.spx][parser.spy] = "Spawner";				
 			}
-			
+
 		}
 		
 		@Override
@@ -482,7 +479,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
     		 	newEnvironmentObject = "";
        		}
         });
-		UserInterface.setLayout(new GridLayout(5,1));
+		UserInterface.setLayout(new GridLayout(4,1));
 		UserInterface.add(bWall);
 		UserInterface.add(bJump);
 		UserInterface.add(bEndArea);
