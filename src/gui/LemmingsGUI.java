@@ -164,7 +164,7 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		});
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(BorderLayout.CENTER, sc);
-		setPreferredSize(new Dimension(600,600));
+		setPreferredSize(new Dimension(700,600));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Lemmings Game");
 		pack();

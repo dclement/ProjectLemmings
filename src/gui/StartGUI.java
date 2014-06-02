@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -53,9 +54,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import Util.Position;
 import Util.XMLParser;
+import environment.EndArea;
 import environment.Environment;
 import environment.EnvironmentObject;
+import environment.Jump;
+import environment.Wall;
 
 /**
  * GUI classe
@@ -100,6 +105,8 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	private String newEnvironmentObject = null;
 	private int width = 28;
 	private int height = 28;
+	private String numberLemmings = "1";
+	private XMLParser parser;
 	private int countSpawner = 0;
 	private int countEndarea = 0;
 	/**
@@ -218,6 +225,54 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		@Override
 		public void menuSelected(MenuEvent e) {
 			// TODO Auto-generated method stub
+			// Chargement de la carte a modifier
+			InputStream is;
+			JFrame guiFrame = new JFrame();
+			final JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showOpenDialog(guiFrame);
+			String fileIn = null;
+			
+			if(returnVal == JFileChooser.APPROVE_OPTION)
+			{
+				fileIn = fc.getSelectedFile().getAbsolutePath();
+			}
+			if(fileIn!=null)
+			{
+				parser = new XMLParser();
+				try {
+					parser.readXML(fileIn);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ParserConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SAXException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				ArrayList<Position> list = parser.Walls;
+				for(Position p :list)
+				{
+					grid[p.getX()][p.getY()]="Wall";
+					for(int i=0;i<p.getWidth();i++)
+					{
+						int currentx = p.getX()+i;
+						grid[currentx][p.getY()] = "Wall";
+						for(int j=0;j<p.getHeight();j++)
+						{
+							grid[currentx][p.getY()+j+1] = "Wall";
+						}
+					}
+				}
+				grid[parser.endAreax][parser.endAreay] = "EndArea";
+				ArrayList<Position> listJump = parser.Jump;
+				for(Position p :listJump)
+				{
+					grid[p.getX()][p.getY()]="Jump";
+				}
+				grid[parser.spx][parser.spy] = "Spawner";				
+			}
 			
 		}
 		
@@ -251,7 +306,6 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 
 			//If a string was returned, say so.
 			if ((selectedValue != null) && (selectedValue.length() > 0)) {
-			   System.out.println("sele  " + selectedValue);
 			   try {
 				   save(selectedValue);
 			   } catch (ParserConfigurationException e1) {
@@ -313,7 +367,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 							Element Spawner = document.createElement("Spawner");
 							Spawner.setAttribute("x", String.valueOf(x));
 							Spawner.setAttribute("y", String.valueOf(y));
-							Spawner.setAttribute("numberLemmings", "5");
+							Spawner.setAttribute("numberLemmings", numberLemmings);
 							env.appendChild(Spawner);
 						}
 					}
@@ -401,6 +455,22 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 			 
             public void actionPerformed(ActionEvent e)
             {
+            	Object[] possibilities = null;
+    			String selectedValue = (String) JOptionPane.showInputDialog(null,
+
+    			        "Number of Lemmings", "Lemmings' number",
+
+    			        JOptionPane.INFORMATION_MESSAGE, null,
+
+    			        possibilities, null);
+
+    			//If a string was returned, say so.
+    			if ((selectedValue != null) && (selectedValue.length() > 0)) {
+    				if(Integer.valueOf(selectedValue)>0)
+    				{
+    					numberLemmings = selectedValue;
+    				}
+    			}
     		 	newEnvironmentObject = "Spawner";
        		}
         });
@@ -412,7 +482,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
     		 	newEnvironmentObject = "";
        		}
         });
-		UserInterface.setLayout(new GridLayout(4,1));
+		UserInterface.setLayout(new GridLayout(5,1));
 		UserInterface.add(bWall);
 		UserInterface.add(bJump);
 		UserInterface.add(bEndArea);

@@ -15,6 +15,7 @@ public class MainWindow {
 	public static StartGUI window;
 	public MainWindow() {
 		window = new StartGUI();
+		window.setResizable(false);
 	}
 	
 	public static void run() {
