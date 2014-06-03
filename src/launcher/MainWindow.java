@@ -47,16 +47,11 @@ public class MainWindow {
 			fileIn = fc.getSelectedFile().getAbsolutePath();
 			
 		}
-		
-		
-		
+
 		System.out.println("file " + fileIn);
 		Game game = new Game(fileIn);
 		if (window!=null) window.setVisible(false);
 		game.run();
-		//JOptionPane.showMessageDialog(window,"Game Over!"); //$NON-NLS-1$
-	
-		//System.exit(0);
 	}
 	
 	public static void main(String[] args) {

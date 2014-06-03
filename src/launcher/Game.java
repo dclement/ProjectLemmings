@@ -92,29 +92,9 @@ public class Game {
 		
 		//TODO since we now run a JANUS kernel, we shouldn't need this anymore
 		while (!this.stop.get()) {
-			//Y a t il des agents ?
-			/*
-			if(!sp.getLemmingList().isEmpty())
-			{
-				//Live des agents
-				for(LemmingMind Lem : sp.getLemmingList()) {
-						Lem.live();
-				}
-				
-			}
-			
-			try {
-				Thread.sleep(500);
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-			*/
 			if (window!=null) window.repaint();
 		}
-		
-
-		//JOptionPane.showMessageDialog(window,"Game Over!"); //$NON-NLS-1$
+	
 		if (window!=null) window.setVisible(false);
 	}
 	
@@ -126,42 +106,5 @@ public class Game {
 		this.GUI = new LemmingsGUI(this.environment); 
 		return this.GUI;
 		
-	}
-	
-/*
-	public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-		/*parser = new XMLParser();
-		
-		FrameStart = new StartGUI();
-		if (FrameStart!=null) FrameStart.setVisible(true);
-		while(!FrameStart.StartSimulation)
-		{
-			System.out.println("Wait launch");
-		}
-		FrameStart.setVisible(false);*/
-		//Recherche du xml de creation du monde par l'utilisateur
-	/*
-		InputStream is;
-		JFrame guiFrame = new JFrame();
-		final JFileChooser fc = new JFileChooser();
-		int returnVal = fc.showOpenDialog(guiFrame);
-		String fileIn = null;
-		
-		if(returnVal == JFileChooser.APPROVE_OPTION)
-		{
-			fileIn = fc.getSelectedFile().getAbsolutePath();
-			
-		}
-		System.out.println("file " + fileIn);
-		//Parse le fichier xml
-		if(fileIn!=null)
-		{
-			parser.readXML(fileIn);
-			Game game = new Game();
-			game.run();
-		}
-		System.exit(0);
-		
-	}*/
-	
+	}	
 }
