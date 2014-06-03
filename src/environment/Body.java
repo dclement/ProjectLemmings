@@ -11,6 +11,7 @@ public abstract class Body implements EnvironmentObject {
 	private final Environment environment;
 	private Direction orientation;
 	private boolean falling;
+	private boolean dead;
 	private MotionInfluence motionInfluence; 
 
 	private List<Perception> perceptions;
@@ -110,11 +111,19 @@ public abstract class Body implements EnvironmentObject {
 	public boolean isFalling() {
 		return falling;
 	}
+	
+	public boolean isDead() {
+		return dead;
+	}
 
 	public void setFalling(boolean fall) {
 		this.falling = fall;
 	}
 
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
+	
 	public void setPerceptions(List<Perception> list) {
 		this.perceptions = list; 
 	}

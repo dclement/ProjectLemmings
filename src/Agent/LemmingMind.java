@@ -77,59 +77,70 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 		@Override
 		public Status live() {
 			
-			
-			// Get the perceptions from the body.
-			List<Perception> perception = this.getPerceivedObjects();
-			
-			Direction desiredDirection = null;
-					
-			// Point d'arriver
-			Perception EndAreaTracking = extractEndArea(perception);
-			
-			if (EndAreaTracking!=null) {
-				// See the EndArea
-				desiredDirection = EndAreaTracking.getDirection();
-			}
-			else {
-					List<Direction> freeDirections = extractFreeDirections(perception);
-					if (!freeDirections.isEmpty()) {
-						if(jumpAvailable(perception))
-						{
-							desiredDirection = Direction.NORTHEAST;
-						}
-						else
-						{
-						if (freeDirections.contains(getOrientation()))
-						{
-							desiredDirection = getOrientation();
-						}
-						else
-						{
-							desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
-						}
-						}
-					}
-			}
-
-			System.out.println(this.getAddress().toString() + " is Alive");
-			System.out.println("DesiredDirection " + desiredDirection);
-			// If the Lemmings decided to move, try to move the body accordingly.
-			if (desiredDirection!=null)
+			if(!isDead())
 			{
-				this.setMotionInfluence(new MotionInfluence(desiredDirection));
-			}
-			else
-			{ // la je comprend pas tout =°
-				this.setMotionInfluence(new MotionInfluence(desiredDirection));
-				//influeence
-				//Update body if body is falling
+				// Get the perceptions from the body.
+				List<Perception> perception = this.getPerceivedObjects();
+				Direction desiredDirection = null;
+						
+				// Point d'arriver
+				Perception EndAreaTracking = extractEndArea(perception);
 				
-				if(isFalling())
+				if (EndAreaTracking!=null) {
+					// See the EndArea
+					desiredDirection = EndAreaTracking.getDirection();
+				}
+				else {
+						List<Direction> freeDirections = extractFreeDirections(perception);
+						if (!freeDirections.isEmpty()) {
+							if(jumpAvailable(perception))
+							{
+								desiredDirection = Direction.NORTHEAST;
+							}
+							else
+							{
+							if (freeDirections.contains(getOrientation()))
+							{
+								desiredDirection = getOrientation();
+							}
+							else
+							{
+								desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
+							}
+							}
+						}
+				}
+	
+				System.out.println(this.getAddress().toString() + " is Alive");
+				System.out.println("DesiredDirection " + desiredDirection);
+				// If the Lemmings decided to move, try to move the body accordingly.
+				if (desiredDirection!=null)
 				{
 					this.setMotionInfluence(new MotionInfluence(desiredDirection));
 				}
+				else
+				{ // la je comprend pas tout =°
+					//this.setMotionInfluence(new MotionInfluence(desiredDirection));
+					//influeence
+					//Update body if body is falling
+					System.out.println("Fall " + isFalling());
+					if(isFalling())
+					{
+						this.setMotionInfluence(new MotionInfluence(desiredDirection));
+					}
+					else
+					{
+						//Bloquer dans un trou
+						System.out.println("kill");
+						killMe();
+					}
+				}
 			}
-			
+			else
+			{
+				// corps dead suicide
+				killMe();
+			}
 			return StatusFactory.ok(this);
 		}
 

@@ -17,6 +17,7 @@ import org.janusproject.kernel.Kernel;
 import org.janusproject.kernel.address.AgentAddress;
 import org.janusproject.kernel.agent.Kernels;
 import org.janusproject.kernel.util.random.RandomNumber;
+import org.janusproject.kernel.util.sizediterator.SizedIterator;
 
 import Agent.LemmingsBody;
 import Util.Position;
@@ -276,6 +277,7 @@ public class Environment {
 						{
 							System.out.println("Lemmings arrivé !! ");
 							//suppression du body dans la grille
+							body.setDead(true);
 							this.grid[position.x][position.y] = null;
 							setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
 						}
@@ -445,6 +447,7 @@ public class Environment {
 
 	public void killAgentBody(AgentAddress agent) {
 		// TODO Kill Body
+		this.bodies.remove(agent);
 	}
 
 	public void spawnAgentBody(Agent.Animat<?> animat, Point position) {

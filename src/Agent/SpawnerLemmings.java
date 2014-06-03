@@ -43,7 +43,7 @@ public class SpawnerLemmings extends Thread{
 			
 			spawn();
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(2000);
 			}
 			catch (InterruptedException e) {
 				return;

@@ -117,6 +117,10 @@ public abstract class Animat<ABT extends AIBody> extends Agent {
 	protected final boolean isFalling(){
 		return this.getBody().isFalling();
 	}
+	
+	protected final boolean isDead(){
+		return this.getBody().isDead();
+	}
 		
 	/** Replies all the perceived objects.
 	 * 
