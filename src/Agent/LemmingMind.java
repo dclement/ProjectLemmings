@@ -59,7 +59,7 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 		 */
 		private Perception extractEndArea(List<Perception> list) {
 			for(Perception obj : list) {
-				if (obj.isEndArea()) {
+				if (obj.isEndArea() && obj.getDistance()==1) {
 					return obj;
 				}
 			}

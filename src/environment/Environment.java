@@ -263,34 +263,46 @@ public class Environment {
 						body.setFalling(false);
 					}
 					
-					if (!body.isFalling() && isFree(x,y)) {
-						this.grid[x][y] = body;
+					//Chute 
+					if(body.isFalling())
+					{
+						this.grid[position.x][y+1] = body;
 						this.grid[position.x][position.y] = null;
-						if (dir.name().contains("EAST"))
-						{
-							body.setOrientation(Direction.EAST);
-						}
-						else if(dir.name().contains("WEST"))
-							{
-								body.setOrientation(Direction.WEST);
-							}
-						//body.setOrientation(dir);
 					}
 					else
 					{
-						if(isEndArea(x, y))
+						//Position desirée libre 
+						if(isFree(x, y))
 						{
-							System.out.println("Lemmings arrivé !! ");
-							//suppression du body dans la grille
-							body.setDead(true);
+							this.grid[x][y] = body;
 							this.grid[position.x][position.y] = null;
-							setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
+							if (dir.name().contains("EAST"))
+							{
+								body.setOrientation(Direction.EAST);
+							}
+							else if(dir.name().contains("WEST"))
+								{
+									body.setOrientation(Direction.WEST);
+								}
+							
+							if(isPike(x, y+1))
+							{
+								System.out.println("Dead by pick !! ");
+								//suppression du body dans la grille
+								this.grid[x][y] = null;
+								body.setDead(true);
+							}
 						}
 						else
 						{
-							//Lemmings en chûte
-							this.grid[position.x][y+1] = body;
-							this.grid[position.x][position.y] = null;
+							if(isEndArea(x, y))
+							{
+								System.out.println("Lemmings arrivé !! ");
+								//suppression du body dans la grille
+								body.setDead(true);
+								this.grid[position.x][position.y] = null;
+								setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
+							}
 						}
 					}
 			}
@@ -312,6 +324,12 @@ public class Environment {
 				
 				if (body.isFalling() && isFree(position.x,position.y+1)) {
 					this.grid[position.x][position.y+1] = body;
+					this.grid[position.x][position.y] = null;
+				}
+				if(body.isFalling() && isPike(position.x, position.y+1))
+				{
+					System.out.println("Chute Dead by pick !! ");
+					body.setDead(true);
 					this.grid[position.x][position.y] = null;
 				}
 			}
