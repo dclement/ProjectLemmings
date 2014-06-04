@@ -10,8 +10,9 @@ public class Perception {
 	private final boolean isLemmings;
 	private final int hauteur;
 	private final boolean isJump;
+	private final boolean isPike;
 	
-	public Perception(boolean wall, Direction direction, int distance, int hauteur, boolean endArea, boolean Lemmings, boolean Jump) {
+	public Perception(boolean wall, Direction direction, int distance, int hauteur, boolean endArea, boolean Lemmings, boolean Jump, boolean Pike) {
 		
 		
 		PerceptionType type;
@@ -22,6 +23,7 @@ public class Perception {
 		this.isLemmings = Lemmings;
 		this.hauteur = hauteur;
 		this.isJump = Jump;
+		this.isPike = Pike;
 	}
 	
 	/** Replies if the perceived object is a wall.
@@ -63,16 +65,36 @@ public class Perception {
 	public int getDistance() {
 		return this.distance;
 	}
-
+	
+	/** Replies if the perceived object is a Lemmings.
+	 * 
+	 * @return <code>true</code> if lemmings.
+	 */
 	public boolean isLemmings() {
 		return this.isLemmings;
 	}
 	
+	/** Replies the distance to the perceived object.
+	 * 
+	 * @return the distance to the object.
+	 */
 	public int getHauteur() {
 		return this.hauteur;
 	}
 	
+	/** Replies if the perceived object is a Jump.
+	 * 
+	 * @return <code>true</code> if jump.
+	 */
 	public boolean isJump() {
 		return this.isJump;
+	}
+	
+	/** Replies if the perceived object is a Pike.
+	 * 
+	 * @return <code>true</code> if pike.
+	 */
+	public boolean isPike() {
+		return this.isPike;
 	}
 }

@@ -85,6 +85,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	private BufferedImage Spawner_img = null;
 	private BufferedImage Jump_img = null;
 	private BufferedImage EndArea_img = null;
+	private BufferedImage Pike_img = null;
 
 	private JMenuBar menuBar;
 	private JMenu play;
@@ -97,6 +98,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	private JButton bJump;
 	private JButton bEndArea;
 	private JButton bSpawner;
+	private JButton bPike;
 	private JButton bSupp;
 	private boolean StartSimulation = false;
 	private String newEnvironmentObject = null;
@@ -143,6 +145,15 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		try {
 			BufferedImage EndArea_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
 	    	EndArea_img= resizeImage(EndArea_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Pike_img_tmp = ImageIO.read(new File(getClass().getResource("pike.png").toURI()));
+	    	Pike_img= resizeImage(Pike_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
 	    } catch (URISyntaxException e1) {
@@ -248,6 +259,8 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				
+				//Walls
 				ArrayList<Position> list = parser.Walls;
 				for(Position p :list)
 				{
@@ -262,12 +275,21 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 						}
 					}
 				}
+				//Endarea
 				grid[parser.endAreax][parser.endAreay] = "EndArea";
+				//JUmp
 				ArrayList<Position> listJump = parser.Jump;
 				for(Position p :listJump)
 				{
 					grid[p.getX()][p.getY()]="Jump";
 				}
+				//Pike
+				ArrayList<Position> listPike = parser.Pike;
+				for(Position p :listPike)
+				{
+					grid[p.getX()][p.getY()]="Pike";
+				}
+				//Spawner
 				grid[parser.spx][parser.spy] = "Spawner";				
 			}
 
@@ -366,6 +388,14 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 							Spawner.setAttribute("y", String.valueOf(y));
 							Spawner.setAttribute("numberLemmings", numberLemmings);
 							env.appendChild(Spawner);
+						}
+						if (grid[x][y].equalsIgnoreCase("Pike")) {
+							Element Pike = document.createElement("Pike");
+							Pike.setAttribute("x", String.valueOf(x));
+							Pike.setAttribute("y", String.valueOf(y));
+							Pike.setAttribute("width", "1");
+							Pike.setAttribute("height", "1");
+							env.appendChild(Pike);
 						}
 					}
 					
@@ -471,6 +501,14 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
     		 	newEnvironmentObject = "Spawner";
        		}
         });
+		bPike = new JButton("Pike");
+		bPike.addActionListener(new ActionListener() {
+			 
+            public void actionPerformed(ActionEvent e)
+            {
+             	newEnvironmentObject = "Pike";
+       		}
+        });
 		bSupp = new JButton("Suppr");
 		bSupp.addActionListener(new ActionListener() {
 			 
@@ -479,11 +517,12 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
     		 	newEnvironmentObject = "";
        		}
         });
-		UserInterface.setLayout(new GridLayout(4,1));
+		UserInterface.setLayout(new GridLayout(6,1));
 		UserInterface.add(bWall);
 		UserInterface.add(bJump);
 		UserInterface.add(bEndArea);
 		UserInterface.add(bSpawner);
+		UserInterface.add(bPike);
 		UserInterface.add(bSupp);
 		getContentPane().add(BorderLayout.EAST, UserInterface);
 		UserInterface.setVisible(false);
@@ -542,24 +581,19 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 						if(grid[x][y]!=null)
 						{
 							if (grid[x][y].equalsIgnoreCase("Wall")) {
-								g2d.setColor(Color.BLUE);
-								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 								g2d.drawImage(Wall_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 							}
 							if (grid[x][y].equalsIgnoreCase("EndArea")) {
-								g2d.setColor(Color.RED);
-								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 								g2d.drawImage(EndArea_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 							}
 							if (grid[x][y].equalsIgnoreCase("Jump")) {
-								g2d.setColor(Color.GREEN);
-								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 								g2d.drawImage(Jump_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 							}
 							if (grid[x][y].equalsIgnoreCase("Spawner")) {
-								g2d.setColor(Color.YELLOW);
-								//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 								g2d.drawImage(Spawner_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+							}
+							if (grid[x][y].equalsIgnoreCase("Pike")) {
+								g2d.drawImage(Pike_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 							}
 						}
 					}
@@ -614,6 +648,13 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		return this.StartSimulation;
 	}
 	
+	/**
+	 * Resize image to draw
+	 * @param image old image to resize
+	 * @param width new dimension 
+	 * @param height new dimension
+	 * @return image resized
+	 */
 	public BufferedImage resizeImage(BufferedImage image, int width, int height) {
        int type=0;
        type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();

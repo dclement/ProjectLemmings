@@ -6,9 +6,10 @@ package Util;
  *
  */
 public class Position {
-
+	//Position du mur
 	private int x;
 	private int y;
+	//Dimension du mur
 	private int width;
 	private int height;
 	

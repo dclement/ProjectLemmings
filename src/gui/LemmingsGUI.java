@@ -36,7 +36,7 @@ import environment.Environment;
 import environment.EnvironmentObject;
 
 /**
- * GUI classe
+ * GUI classe de la simulation
  * @author Clement
  *
  */
@@ -64,12 +64,14 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 	private String newEnvironmentObject = null;
 	private JButton bWall;
 	private JButton bJump;
+	private JButton bPike;
 	
 	private BufferedImage Wall_img = null;
 	private BufferedImage Spawner_img = null;
 	private BufferedImage Lemming_img = null;
 	private BufferedImage Jump_img = null;
 	private BufferedImage EndArea_img = null;
+	private BufferedImage Pike_img = null;
 	
 	/**
 	 * 
@@ -117,6 +119,15 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		try {
 			BufferedImage Lemming_img_tmp = ImageIO.read(new File(getClass().getResource("Lemming.png").toURI()));
 	    	Lemming_img= resizeImage(Lemming_img_tmp, CELL_WIDTH, CELL_HEIGHT);
+	    } catch (IOException e) {
+	    	System.err.println(e.getMessage());
+	    } catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			BufferedImage Pike_img_tmp = ImageIO.read(new File(getClass().getResource("Pike.png").toURI()));
+	    	Pike_img= resizeImage(Pike_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
 	    } catch (URISyntaxException e1) {
@@ -186,10 +197,19 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
             {
     		 	newEnvironmentObject = "environment.Jump";
        		}
-        });      
+        });
+		bPike = new JButton("Pike");
+		bPike.addActionListener(new ActionListener() {
+			 
+            public void actionPerformed(ActionEvent e)
+            {
+    		 	newEnvironmentObject = "environment.Pike";
+       		}
+        });   
 		UserInterface.setLayout(new GridLayout(4,1));
 		UserInterface.add(bWall);
 		UserInterface.add(bJump);
+		UserInterface.add(bPike);
 		getContentPane().add(BorderLayout.EAST, UserInterface);
 		UserInterface.setVisible(false);
 		addKeyListener(this);
@@ -246,24 +266,19 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 						px = CELL_WIDTH * x;
 						py = CELL_HEIGHT * y;
 						if (LemmingsGUI.this.environment.isWall(x,y)) {
-							g2d.setColor(Color.BLUE);
-							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 							g2d.drawImage(Wall_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 						if (LemmingsGUI.this.environment.isLemmings(x, y)) {
-							g2d.setColor(Color.YELLOW);
 							g2d.drawImage(Lemming_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
-							//g2d.fillOval(px, py, 10, 10);
 						}
 						if (LemmingsGUI.this.environment.isEndArea(x,y)) {
-							g2d.setColor(Color.RED);
-							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 							g2d.drawImage(EndArea_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 						if (LemmingsGUI.this.environment.isJump(x,y)) {
-							g2d.setColor(Color.GREEN);
-							//g2d.fillRect(px, py, CELL_WIDTH, CELL_HEIGHT);
 							g2d.drawImage(Jump_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
+						}
+						if (LemmingsGUI.this.environment.isPike(x,y)) {
+							g2d.drawImage(Pike_img, px, py, CELL_WIDTH, CELL_HEIGHT, this);
 						}
 					}
 				}
@@ -282,7 +297,7 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		  x=x/CELL_WIDTH;
 		  y=y/CELL_HEIGHT;
 		  //Remove object
-		  if(LemmingsGUI.this.environment.isWall(x, y) || LemmingsGUI.this.environment.isJump(x, y))
+		  if(LemmingsGUI.this.environment.isWall(x, y) || LemmingsGUI.this.environment.isJump(x, y) || LemmingsGUI.this.environment.isPike(x, y))
 		  {
 			  EnvironmentObject remplacement = null;
 			  LemmingsGUI.this.environment.userEnvironnementChange(remplacement,x,y);
@@ -337,6 +352,14 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/**
+	 * Resize image to draw
+	 * @param image old image to resize
+	 * @param width new dimension 
+	 * @param height new dimension
+	 * @return image resized
+	 */
 	public BufferedImage resizeImage(BufferedImage image, int width, int height) {
 	       int type=0;
 	       type = image.getType() == 0? BufferedImage.TYPE_INT_ARGB : image.getType();

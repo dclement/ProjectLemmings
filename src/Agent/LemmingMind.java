@@ -47,6 +47,8 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 			freeDirections.remove(Direction.NORTHWEST);
 			freeDirections.remove(Direction.SOUTH);
 			freeDirections.remove(Direction.NORTH);
+			freeDirections.remove(Direction.SOUTHEAST);
+			freeDirections.remove(Direction.SOUTHWEST);
 			return freeDirections;
 		}
 		
@@ -67,7 +69,7 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 		private boolean jumpAvailable(List<Perception> list){
 			boolean etat = false;
 			for(Perception obj : list) {
-				if (obj.getDistance()<=1 && obj.getHauteur()==1 && obj.isJump()) {
+				if (obj.getDistance()==0 && obj.getHauteur()==1 && obj.isJump()) {
 					etat = true;
 				}
 			}
@@ -147,7 +149,7 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 
 		@Override
 		protected LemmingsBody createBody(Environment env) {
-			return new LemmingsBody(getAddress(),env, 4, Direction.EAST,true);			// max angular acceleration (r/s)/s
+			return new LemmingsBody(getAddress(),env, 2, Direction.EAST,true);			// max angular acceleration (r/s)/s
 			
 		}
 

@@ -48,6 +48,7 @@ public class XMLParser{
 	public int numberLemmings;
 	public ArrayList<Position> Walls = new ArrayList<Position>();
 	public ArrayList<Position> Jump = new ArrayList<Position>();
+	public ArrayList<Position> Pike = new ArrayList<Position>();
 	public int spx;
 	public int spy;
 	public int endAreax;
@@ -117,6 +118,10 @@ public class XMLParser{
 						{
 							xmlEndarea(subnode);
 						}
+						if (subnode.getNodeName().equals("Pike")) 
+						{
+							xmlPike(subnode);
+						}
 					}
 				}
 			}
@@ -165,5 +170,15 @@ public class XMLParser{
 		Node element = subnode;
 		Element elementEnv = (Element)element;
 		Jump.add(new Position(Integer.valueOf(elementEnv.getAttribute("x")), Integer.valueOf(elementEnv.getAttribute("y")), Integer.valueOf(elementEnv.getAttribute("width")), Integer.valueOf(elementEnv.getAttribute("height"))));
+	}
+	
+	/**
+	 * lecture du node Pike
+	 * @param subnode
+	 */
+	private void xmlPike(Node subnode) {
+		Node element = subnode;
+		Element elementEnv = (Element)element;
+		Pike.add(new Position(Integer.valueOf(elementEnv.getAttribute("x")), Integer.valueOf(elementEnv.getAttribute("y")), Integer.valueOf(elementEnv.getAttribute("width")), Integer.valueOf(elementEnv.getAttribute("height"))));
 	}
 }

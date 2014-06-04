@@ -34,6 +34,16 @@ public enum Direction {
 	NORTHEAST(+1,-1) {
 		@Override
 		public Direction opposite() { return NORTHWEST; }
+	},
+	/** SouthWest. */
+	SOUTHWEST(-1,+1) {
+		@Override
+		public Direction opposite() { return SOUTHEAST; }
+	},
+	/** NorthEast. */
+	SOUTHEAST(+1,+1) {
+		@Override
+		public Direction opposite() { return SOUTHWEST; }
 	};
 	
 	/** Relative coordinate of the direction.

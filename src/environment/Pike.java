@@ -2,11 +2,11 @@
 package environment;
 
 /**
- * Definition d'un jump
+ * Definition d'un pic
  * @author Clement
  *
  */
-public class Jump implements EnvironmentObject {
+public class Pike implements EnvironmentObject {
 
 	@Override
 	public boolean isOccluder() {

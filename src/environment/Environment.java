@@ -109,6 +109,11 @@ public class Environment {
 		{
 			this.grid[p.getX()][p.getY()]=new Jump();
 		}
+		ArrayList<Position> listPike = parser.Pike;
+		for(Position p :listPike)
+		{
+			this.grid[p.getX()][p.getY()]=new Pike();
+		}
 		/**
 		 * Bord de la carte
 		 */
@@ -357,15 +362,6 @@ public class Environment {
 		}
 	}
 	
-
-	
-	/*
-	public synchronized LemmingsBody addLemmings(int x, int y, int distance, Direction direction, boolean fall) {
-		LemmingsBody body = new LemmingsBody(this, distance, direction, fall);
-		this.grid[x][y] = body;
-		return body;
-	}/*
-
 	/** Retreive and reply the position of the given body.
 	 * 
 	 * @param body is the body to search for.
@@ -392,14 +388,14 @@ public class Environment {
 		List<Perception> list = new LinkedList<Perception>();
 		Point position = getPosition(body);
 		if (position!=null) {
+			
 			int distance = body.getPerceptionDistance();
-
 			Direction[] directions = Direction.values();
 
 			BitSet sets = new BitSet(directions.length);
 			sets.set(0,directions.length);
 
-			int x, y;
+			int x, y, j;
 			Perception perception;
 
 			for(int i=1; i<=distance; i++) {
@@ -407,15 +403,24 @@ public class Environment {
 					if (sets.get(direction.ordinal())) {
 						x = position.x + (direction.dx * i);
 						y = position.y + (direction.dy * i);
+						if(direction.dx==0)
+						{
+							j=0;
+						}
+						else
+						{
+							j=i;
+						}
 						if (!isFree(x,y)) {
 							perception = new Perception(
 									isWall(x,y),
 									direction,
-									i,
-									direction.dy,
+									j,
+									direction.dy*i,
 									isEndArea(x, y),
 									isLemmings(x,y),
-									isJump(x, y));
+									isJump(x, y),
+									isPike(x,y));
 							list.add(perception);
 							if (isOccluder(x, y))
 								sets.clear(direction.ordinal());
@@ -438,6 +443,11 @@ public class Environment {
 	public synchronized boolean isJump(int x, int y) {
 		return (x>=0 && y>=0 && x<this.width && y<this.height
 				&& (this.grid[x][y] instanceof Jump));
+	}
+	
+	public synchronized boolean isPike(int x, int y) {
+		return (x>=0 && y>=0 && x<this.width && y<this.height
+				&& (this.grid[x][y] instanceof Pike));
 	}
 
 	public synchronized void userEnvironnementChange(EnvironmentObject remplacement, int x, int y)
@@ -462,7 +472,4 @@ public class Environment {
 		}
 		
 	}
-
-
-
 }

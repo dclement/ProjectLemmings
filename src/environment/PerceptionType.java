@@ -5,5 +5,6 @@ public enum PerceptionType {
 	LEMMING,
 	ENDAREA,
 	JUMP,
+	PIKE,
 	
 }

@@ -4,6 +4,7 @@ package environment;
  * Classe servant a definir la zone ou les lemmings doivent arriver
  * @author Clement
  *
+ *
  */
 public class EndArea implements EnvironmentObject {
 
