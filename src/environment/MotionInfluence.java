@@ -2,17 +2,17 @@ package environment;
 
 import org.janusproject.kernel.address.AgentAddress;
 
-public class MotionInfluence {
+public class MotionInfluence extends Influence{
 	Direction direction;
-	AgentAddress emiter; 
 	
 	public MotionInfluence(Direction dir){
 		this(dir, null);
 	}
 	
 	public MotionInfluence(Direction dir, AgentAddress emiter){
+		super(emiter);
 		this.direction = dir;
-		this.emiter = emiter;
+		
 	}
 
 	public MotionInfluence(){
@@ -27,12 +27,5 @@ public class MotionInfluence {
 		this.direction = direction;
 	}
 
-	public AgentAddress getEmiter() {
-		return emiter;
-	}
-
-	public void setEmiter(AgentAddress emiter) {
-		this.emiter = emiter;
-	}
-	
+		
 }
