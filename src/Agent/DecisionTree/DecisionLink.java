@@ -2,14 +2,16 @@ package Agent.DecisionTree;
 
 import environment.Influence;
 
-public class DecisionParent {
+public class DecisionLink {
 
 	private final DecisionNode parent;
 	private final Influence influence;
 	private float strength;
-
-	public DecisionParent(DecisionNode parent, Influence influence,	float strength) {
+	private final DecisionNode child;
+	
+	public DecisionLink(DecisionNode parent,DecisionNode child, Influence influence,	float strength) {
 		super();
+		this.child = child; 
 		this.strength = strength;
 		this.parent = parent;
 		this.influence = influence;
@@ -29,6 +31,10 @@ public class DecisionParent {
 
 	public Influence getInfluence() {
 		return influence;
+	}
+
+	public DecisionNode getChild() {
+		return child;
 	}
 
 }

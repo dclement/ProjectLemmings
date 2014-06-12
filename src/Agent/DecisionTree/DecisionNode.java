@@ -14,41 +14,46 @@ import environment.MotionInfluence;
 public class DecisionNode implements Comparable {
 	
 	//may be useless
-	private  Point worldCoordinates;
+	private Point worldCoordinates;
 	private Point startingPoint;
-	
+	private DecisionNode[][] nodeMap;
 	//Default insertion strength
 	public static float INSERTION_STRENGTH = 0.70f;
 	
+	
 	private boolean entered=false;
 		
-	private List<DecisionNode> children;
+	private List<DecisionLink> children;
 	
 	//ParentNode
-	private List<DecisionParent> parents;
+	private List<DecisionLink> parents;
 	
-	public DecisionNode(){
+	public DecisionNode(DecisionNode[][] nodeMap,Point wc){
 		//parentNode
+		this.worldCoordinates = wc;
 		this.entered=false; 
-		this.parents = new ArrayList<DecisionParent>();
+		this.parents = new ArrayList<DecisionLink>();
 	}
 	
-	public DecisionNode(DecisionParent parent){
-		this();
+	public DecisionNode(DecisionLink parent,DecisionNode[][] nodeMap,Point wc){
+		this(nodeMap,wc);
 		this.parents.add(parent); 
-		
-	}
-	
-	public DecisionNode(List<DecisionParent> parents){
-		this.entered = false; 
-		this.parents = parents; 
 	}
 	
 	public void enterNode(){
 		if(!entered){
-			children = new ArrayList<DecisionNode>();		
+			children = new ArrayList<DecisionLink>();		
 			for(Direction dir:Direction.values()){
-				children.add(new DecisionNode(new DecisionParent(this,new MotionInfluence(dir),INSERTION_STRENGTH)));
+				DecisionNode child;
+				if(this.nodeMap[worldCoordinates.x][worldCoordinates.y]!=null){
+					child = this.nodeMap[worldCoordinates.x][worldCoordinates.y];
+				}
+				else{
+					child = new DecisionNode(this.nodeMap,new Point(this.worldCoordinates.x + dir.dx,this.worldCoordinates.y+dir.dy));
+				}
+				DecisionLink childlink = new DecisionLink(this,child,new MotionInfluence(dir),INSERTION_STRENGTH);
+				child.addParent(childlink);;
+				children.add(childlink);
 			}
 			//TODO add other kinds of influences ( actions, bridge, dig ... etc )
 		}
@@ -72,31 +77,36 @@ public class DecisionNode implements Comparable {
 			return null;
 		}
 		float bestStrength=0;
-		DecisionNode bestDecisionNode = children.get(0);
-		for( DecisionNode child: children){
-			float str = child.getStrenghWithParent(this);
-			if(str>bestStrength)
+		DecisionNode bestDecisionNode = children.get(0).getChild();
+		for( DecisionLink child: children){
+			float str = child.getStrength();
+			if(str>bestStrength){
 				bestStrength = str; 
-				bestDecisionNode = child;
+				bestDecisionNode = child.getChild();
+			}
 		}
 		
 		return bestDecisionNode;
 	}
 	
-	public List<DecisionNode> getChildren() {
+	public List<DecisionLink> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<DecisionNode> children) {
+	public void setChildren(List<DecisionLink> children) {
 		this.children = children;
 	}
 
+	public void addParent(DecisionLink parent){
+		this.parents.add(parent);
+	}
 	
-	public List<DecisionParent> getParents() {
-		return parents;
+	
+	public List<DecisionLink> getParents() {
+		return this.parents;
 	}
 
-	public void setParents(List<DecisionParent> parents) {
+	public void setParents(List<DecisionLink> parents) {
 		this.parents = parents;
 	}
 

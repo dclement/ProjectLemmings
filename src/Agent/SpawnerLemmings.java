@@ -28,14 +28,21 @@ public class SpawnerLemmings extends Thread{
 	public int posy;
 	public Environment env;
 	private List<LemmingMind> Lemmings = new ArrayList<LemmingMind>();
-			
+	private DecisionNode[][] worldmodel; //TODO we shouldn't create this world here but in an upper kindof thingy should be 
+
 	public SpawnerLemmings(int lemmingsCount, Environment env, int posx, int posy) {
 		this.numberLemmingsLeft = lemmingsCount;
 		this.env = env;
 		this.posx = posx;
 		this.posy = posy;
-		
-		graph = new DecisionNode();
+		this.worldmodel = new DecisionNode[env.getWidth()][];
+		for(int i =0; i<env.getWidth();i++){
+			this.worldmodel[i] = new DecisionNode[env.getHeight()];
+			for(int j=0; j<env.getHeight();j++){
+				this.worldmodel[i][j]=null;
+			}
+		}
+		graph = new DecisionNode(worldmodel,new Point(this.posx, this.posy));
 		
 	}
 	

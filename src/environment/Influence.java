@@ -21,6 +21,4 @@ public abstract class Influence {
 		this.emiter = emiter;
 	}
 	
-	
-	
 }
