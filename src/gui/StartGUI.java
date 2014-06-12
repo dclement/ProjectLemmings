@@ -2,14 +2,10 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -20,15 +16,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -49,15 +40,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.arakhne.afc.vmutil.Resources;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import Util.Position;
 import Util.XMLParser;
-import environment.Environment;
-import environment.EnvironmentObject;
 
 /**
  * GUI classe
@@ -81,6 +69,8 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	 */
 	public static final int DEMI_CELL_HEIGHT = CELL_HEIGHT/2;
 	
+	/** Icons des objets
+	 */
 	private BufferedImage Wall_img = null;
 	private BufferedImage Spawner_img = null;
 	private BufferedImage Jump_img = null;
@@ -102,64 +92,50 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 	private JButton bSupp;
 	private boolean StartSimulation = false;
 	private String newEnvironmentObject = null;
+	// Dimension de l'env par default
 	private int width = 28;
 	private int height = 28;
+	// Nombre de lemmings par default dans un spawner
 	private String numberLemmings = "1";
+	// Parser Xml pour le chargement d'une carte
 	private XMLParser parser;
+	// Controle du nombre de spawner et de endarea --> 1 max
 	private int countSpawner = 0;
 	private int countEndarea = 0;
-	/**
-	 * 
-	 * @param env is the environment to display.
-	 */
+
 	public StartGUI() {
 		
 		 
 		try {
-			BufferedImage Wall_img_tmp = ImageIO.read(new File(getClass().getResource("mur.png").toURI()));
+			BufferedImage Wall_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("mur.png"));
 		  	Wall_img= resizeImage(Wall_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		try {
-			BufferedImage Spawner_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+			BufferedImage Spawner_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("porte.png"));
 	    	Spawner_img= resizeImage(Spawner_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		try {
-			BufferedImage Jump_img_tmp = ImageIO.read(new File(getClass().getResource("jump.png").toURI()));
+			BufferedImage Jump_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("jump.png"));
 	    	Jump_img= resizeImage(Jump_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		try {
-			BufferedImage EndArea_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+			BufferedImage EndArea_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("porte.png"));
 	    	EndArea_img= resizeImage(EndArea_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		try {
-			BufferedImage Pike_img_tmp = ImageIO.read(new File(getClass().getResource("pike.png").toURI()));
+			BufferedImage Pike_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("pike.png"));
 	    	Pike_img= resizeImage(Pike_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		grid = new String[width][height];
 		for(int x=0; x<width; x++) {
 			for(int y=0; y<height; y++) {
@@ -277,6 +253,7 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 				}
 				//Endarea
 				grid[parser.endAreax][parser.endAreay] = "EndArea";
+				countEndarea=1;
 				//JUmp
 				ArrayList<Position> listJump = parser.Jump;
 				for(Position p :listJump)
@@ -290,7 +267,8 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 					grid[p.getX()][p.getY()]="Pike";
 				}
 				//Spawner
-				grid[parser.spx][parser.spy] = "Spawner";				
+				grid[parser.spx][parser.spy] = "Spawner";
+				countSpawner=1;
 			}
 
 		}
@@ -605,18 +583,97 @@ public class StartGUI extends JFrame implements KeyListener, MouseListener {
 		
 	}
 
-
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		  //Relative coordonnate
 		  int x=e.getX();
 		  int y=e.getY();
+		  boolean action = true;
 		  //Coordonnate of the grid
 		  x=x/CELL_WIDTH;
 		  y=y/CELL_HEIGHT;
-	
-		  grid[x][y] = newEnvironmentObject;
-		  repaint();
+		  
+		  // Only one spawner and one endarea
+		  if(newEnvironmentObject.equalsIgnoreCase("Spawner") && countSpawner==1)
+		  {
+			  action = false;
+		  }
+		  if(newEnvironmentObject.equalsIgnoreCase("EndArea") && countEndarea==1)
+		  {
+			  action = false;
+		  }
+		  
+		  // Change map
+		  if(action)
+		  {
+			  // Suppression d'un spawner
+			  if(newEnvironmentObject.equalsIgnoreCase("") && grid[x][y]=="Spawner")
+			  {
+				  countSpawner=0;
+			  }
+			  // Suppression d'une endarea
+			  if(newEnvironmentObject.equalsIgnoreCase("") && grid[x][y]=="EndArea")
+			  {
+				  countEndarea=0;
+			  }
+			  // Suppression d'un endarea par un spawner
+			  if(newEnvironmentObject.equalsIgnoreCase("Spawner"))
+			  {
+				  countSpawner=1;
+				  if(grid[x][y]=="EndArea")
+				  {
+					  countEndarea=0;
+				  }
+			  }
+			  // Suppression d'un spawner par un endarea
+			  if(newEnvironmentObject.equalsIgnoreCase("EndArea"))
+			  {
+				  countEndarea=1;
+				  if(grid[x][y]=="Spawner")
+				  {
+					  countSpawner=0;
+				  }
+			  }
+			  // Suppression d'un endarea ou d'un spawner par un wall
+			  if(newEnvironmentObject.equalsIgnoreCase("Wall"))
+			  {
+				  if(grid[x][y]=="Spawner")
+				  {
+					  countSpawner=0;
+				  }
+				  if(grid[x][y]=="EndArea")
+				  {
+					  countEndarea=0;
+				  }
+			  }
+			  // Suppression d'un endarea ou d'un spawner par un pike
+			  if(newEnvironmentObject.equalsIgnoreCase("Pike"))
+			  {
+				  if(grid[x][y]=="Spawner")
+				  {
+					  countSpawner=0;
+				  }
+				  if(grid[x][y]=="EndArea")
+				  {
+					  countEndarea=0;
+				  }
+			  }
+			  // Suppression d'un endarea ou d'un spawner par un jump
+			  if(newEnvironmentObject.equalsIgnoreCase("Jump"))
+			  {
+				  if(grid[x][y]=="Spawner")
+				  {
+					  countSpawner=0;
+				  }
+				  if(grid[x][y]=="EndArea")
+				  {
+					  countEndarea=0;
+				  }
+			  }
+			  // Modification de la grille
+			  grid[x][y] = newEnvironmentObject;
+			  repaint();
+		  }
 	}
 
 	@Override

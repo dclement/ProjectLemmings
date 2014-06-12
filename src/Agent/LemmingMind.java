@@ -101,27 +101,26 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 							}
 							else
 							{
-							if (freeDirections.contains(getOrientation()))
-							{
-								desiredDirection = getOrientation();
-							}
-							else
-							{
-								desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
-							}
+								if (freeDirections.contains(getOrientation()))
+								{
+									desiredDirection = getOrientation();
+								}
+								else
+								{
+									desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
+								}
 							}
 						}
 				}
 	
 				System.out.println(this.getAddress().toString() + " is Alive");
-				System.out.println("DesiredDirection " + desiredDirection);
 				// If the Lemmings decided to move, try to move the body accordingly.
 				if (desiredDirection!=null)
 				{
 					this.setMotionInfluence(new MotionInfluence(desiredDirection));
 				}
 				else
-				{ // la je comprend pas tout =°
+				{ 
 					//this.setMotionInfluence(new MotionInfluence(desiredDirection));
 					//influeence
 					//Update body if body is falling

@@ -4,20 +4,14 @@ package environment;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.janusproject.kernel.Kernel;
 import org.janusproject.kernel.address.AgentAddress;
-import org.janusproject.kernel.agent.Kernels;
-import org.janusproject.kernel.util.random.RandomNumber;
-import org.janusproject.kernel.util.sizediterator.SizedIterator;
 
 import Agent.LemmingsBody;
 import Util.Position;
@@ -414,8 +408,8 @@ public class Environment {
 			sets.set(0,directions.length);
 
 			int x, y, j;
-			Perception perception;
-
+			Perception perception;	
+			// Perception sur les axes
 			for(int i=1; i<=distance; i++) {
 				for(Direction direction : directions) {			
 					if (sets.get(direction.ordinal())) {
@@ -449,7 +443,7 @@ public class Environment {
 		}
 		return list;
 	}
-
+			
 	public int getTotalLemmingsFinish() {
 		return totalLemmingsFinish;
 	}

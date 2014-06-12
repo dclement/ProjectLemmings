@@ -1,14 +1,10 @@
 package launcher;
+import gui.StartGUI;
+
 import java.io.InputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-
-import Agent.LemmingMind;
-import Agent.SpawnerLemmings;
-import environment.Environment;
-import gui.LemmingsGUI;
-import gui.StartGUI;
 
 
 public class MainWindow {
@@ -56,7 +52,7 @@ public class MainWindow {
 	
 	public static void main(String[] args) {
 		MainWindow m = new MainWindow();
-		MainWindow.run();
+		m.run();
 	}
 
 

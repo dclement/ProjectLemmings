@@ -1,31 +1,16 @@
 package launcher;
 
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import Agent.LemmingMind;
-import Agent.LemmingsBody;
 import Agent.SpawnerLemmings;
 import Util.XMLParser;
-import environment.Direction;
 import environment.Environment;
 import gui.LemmingsGUI;
 import gui.StartGUI;
@@ -70,7 +55,7 @@ public class Game {
 		FrameworkLauncher.launchEnvironment(environment, this.GUI, EXECUTION_DELAY);
 		
 		sp = new SpawnerLemmings(parser.numberLemmings, environment, parser.spx, parser.spy);
-		LemmingMind lem = new LemmingMind();
+		//LemmingMind lem = new LemmingMind();
 		FrameworkLauncher.startSimulation();
 		
 	}
