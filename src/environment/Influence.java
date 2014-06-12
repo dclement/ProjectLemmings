@@ -2,15 +2,50 @@ package environment;
 
 import org.janusproject.kernel.address.AgentAddress;
 
-public abstract class Influence {
-	AgentAddress emiter; 
+public class Influence {
+	private AgentAddress emiter; 
+	
+	private Direction direction;
+	private Action action; 
 	
 	public Influence(AgentAddress emiter){
 		this.emiter = emiter;
 	}
 	
 	public Influence(){
-		this(null);
+		this((AgentAddress) null);
+	}
+
+	public Influence(Direction dir){
+		this(null, dir);
+	}
+	
+	public Influence(AgentAddress emiter, Direction dir){
+		this(emiter, dir, Action.WALK);
+	}
+	
+	public Influence(AgentAddress emiter, Direction dir, Action act){
+		this(emiter);
+		this.direction = dir;
+		this.action = act;
+	}
+	
+	
+	
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
+
+	public Action getAction() {
+		return action;
+	}
+
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 	public AgentAddress getEmiter() {

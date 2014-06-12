@@ -12,7 +12,7 @@ public abstract class Body implements EnvironmentObject {
 	private Direction orientation;
 	private boolean falling;
 	private boolean dead;
-	private MotionInfluence motionInfluence; 
+	private Influence influence; 
 
 	private List<Perception> perceptions;
 	
@@ -132,18 +132,18 @@ public abstract class Body implements EnvironmentObject {
 		return this.perceptions;
 	}
 
-	public MotionInfluence getMotionInfluence() {
-		return motionInfluence;
+	public Influence getMotionInfluence() {
+		return influence;
 	}
 
-	public void setMotionInfluence(MotionInfluence  motionInfluence) {
-		this.motionInfluence = motionInfluence;
+	public void setMotionInfluence(Influence  motionInfluence) {
+		this.influence = motionInfluence;
 	}
 	
-	public MotionInfluence consumeInfluence(){
-		if(this.motionInfluence!=null){
-			MotionInfluence inf = this.motionInfluence;
-			this.motionInfluence = null;
+	public Influence consumeInfluence(){
+		if(this.influence!=null){
+			Influence inf = this.influence;
+			this.influence = null;
 			if(this.getAgentaddress()!= null){
 				inf.setEmiter(this.getAgentaddress());
 			}

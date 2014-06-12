@@ -4,4 +4,5 @@ public enum Action {
 	DIG,
 	BRIDGE,
 	CLIMB,
+	WALK;
 }

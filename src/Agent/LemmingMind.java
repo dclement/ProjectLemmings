@@ -2,7 +2,6 @@ package Agent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -11,11 +10,9 @@ import org.janusproject.kernel.status.Status;
 import org.janusproject.kernel.status.StatusFactory;
 
 import Agent.DecisionTree.DecisionNode;
-import environment.Body;
 import environment.Direction;
-import environment.Entity;
 import environment.Environment;
-import environment.MotionInfluence;
+import environment.Influence;
 import environment.Perception;
 
 /**
@@ -35,6 +32,20 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	 *            is the body to attached to this ghost.
 	 */
 
+	public boolean isInStack(DecisionNode dn){
+		DecisionNode[] dnl = (DecisionNode[]) this.path.toArray();
+		int i =dnl.length-1;
+		while(dnl[i]!=dn){
+			i--;
+		}
+		if(i>0){			//TODO this might end up being REALLY slow ! if we're not looping and we've gone a long way
+			return true;
+		}
+		else
+			return false; 
+	} 
+	
+	
 	public LemmingMind(DecisionNode startingNode) {
 		path = new Stack<DecisionNode>();
 		path.push(startingNode);
@@ -128,7 +139,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 			// If the Lemmings decided to move, try to move the body
 			// accordingly.
 			if (desiredDirection != null) {
-				this.setMotionInfluence(new MotionInfluence(desiredDirection));
+				this.setMotionInfluence(new Influence(desiredDirection));
 			} else {
 				// this.setMotionInfluence(new
 				// MotionInfluence(desiredDirection));
@@ -136,7 +147,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 				// Update body if body is falling
 				System.out.println("Fall " + isFalling());
 				if (isFalling()) {
-					this.setMotionInfluence(new MotionInfluence(
+					this.setMotionInfluence(new Influence(
 							desiredDirection));
 				} else {
 					// Bloquer dans un trou

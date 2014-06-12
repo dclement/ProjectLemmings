@@ -2,14 +2,10 @@ package Agent.DecisionTree;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import environment.Direction;
 import environment.Influence;
-import environment.MotionInfluence;
 
 public class DecisionNode implements Comparable {
 	
@@ -33,6 +29,7 @@ public class DecisionNode implements Comparable {
 		this.worldCoordinates = wc;
 		this.entered=false; 
 		this.parents = new ArrayList<DecisionLink>();
+		this.nodeMap[wc.x][wc.y] = this;
 	}
 	
 	public DecisionNode(DecisionLink parent,DecisionNode[][] nodeMap,Point wc){
@@ -51,7 +48,7 @@ public class DecisionNode implements Comparable {
 				else{
 					child = new DecisionNode(this.nodeMap,new Point(this.worldCoordinates.x + dir.dx,this.worldCoordinates.y+dir.dy));
 				}
-				DecisionLink childlink = new DecisionLink(this,child,new MotionInfluence(dir),INSERTION_STRENGTH);
+				DecisionLink childlink = new DecisionLink(this,child,new Influence(dir),INSERTION_STRENGTH);
 				child.addParent(childlink);;
 				children.add(childlink);
 			}

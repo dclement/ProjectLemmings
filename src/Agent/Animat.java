@@ -32,7 +32,7 @@ import environment.AIBody;
 import environment.Body;
 import environment.Direction;
 import environment.Environment;
-import environment.MotionInfluence;
+import environment.Influence;
 import environment.Perception;
 
 
@@ -110,7 +110,7 @@ public abstract class Animat<ABT extends AIBody> extends Agent {
 		this.getBody().setOrientation(dir);
 	}
 	
-	protected final void setMotionInfluence(MotionInfluence inf){
+	protected final void setMotionInfluence(Influence inf){
 		this.getBody().setMotionInfluence(inf);
 	}
 	

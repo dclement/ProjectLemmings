@@ -339,9 +339,9 @@ public class Environment {
 	*/
 		
 		for(Body body : this.bodies.values()){
-			MotionInfluence mi = body.consumeInfluence();
+			Influence mi = body.consumeInfluence();
 			if(mi!=null){
-				this.move(body, mi.direction);
+				this.move(body, mi.getDirection());
 				
 			}
 		}
