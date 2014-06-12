@@ -21,86 +21,83 @@ public class DecisionNode implements Comparable {
 	public static float INSERTION_STRENGTH = 0.70f;
 	
 	private boolean entered=false;
-	private Influence Influence;
-	
-	private Set<DecisionNode> children;
+		
+	private List<DecisionNode> children;
 	
 	//ParentNode
-	private DecisionNode parent;
-	
-	//Strength to parent
-	private float strength;
-	
-	static public int compare(DecisionNode dn1, DecisionNode dn2){
-		return dn1.compareTo(dn2);
-	}
-	
-	public int compareTo(DecisionNode dn) throws ClassCastException{
-		return Float.compare(this.strength, dn.getStrengh());		
-	}
+	private List<DecisionParent> parents;
 	
 	public DecisionNode(){
 		//parentNode
-		this.parent = null;
-		this.strength = 1;
+		this.entered=false; 
+		this.parents = new ArrayList<DecisionParent>();
 	}
 	
-	public DecisionNode(DecisionNode parent, Influence influence, float initialStrengh){
-		this.strength = initialStrengh;
-		this.parent = parent; 
-		this.Influence = influence;
+	public DecisionNode(DecisionParent parent){
+		this();
+		this.parents.add(parent); 
+		
+	}
+	
+	public DecisionNode(List<DecisionParent> parents){
+		this.entered = false; 
+		this.parents = parents; 
 	}
 	
 	public void enterNode(){
 		if(!entered){
-			children = new TreeSet<DecisionNode>();		
+			children = new ArrayList<DecisionNode>();		
 			for(Direction dir:Direction.values()){
-				children.add(new DecisionNode(this,new MotionInfluence(dir),INSERTION_STRENGTH));
+				children.add(new DecisionNode(new DecisionParent(this,new MotionInfluence(dir),INSERTION_STRENGTH)));
 			}
 			//TODO add other kinds of influences ( actions, bridge, dig ... etc )
 		}
 	}
 
-	public DecisionNode getBestChildren(){
-		Iterator<DecisionNode> it = this.children.iterator();
-		if(it.hasNext()){
-			return it.next();
+	public float getStrenghWithParent(DecisionNode parent){
+		float retval = -1;
+		int i=0;
+		while(i<parents.size() && parents.get(i).getParent()!=parent){
+			i++;
 		}
-		else{
-			return null;
+		
+		if(i<parents.size()){
+			retval = parents.get(i).getStrength();
 		}
+		return retval;
 	}
 	
-	public Influence getInfluence() {
-		return Influence;
+	public DecisionNode getBestChildren(){
+		if(children.size() ==0){
+			return null;
+		}
+		float bestStrength=0;
+		DecisionNode bestDecisionNode = children.get(0);
+		for( DecisionNode child: children){
+			float str = child.getStrenghWithParent(this);
+			if(str>bestStrength)
+				bestStrength = str; 
+				bestDecisionNode = child;
+		}
+		
+		return bestDecisionNode;
 	}
-
-	public void setInfluence(Influence influence) {
-		Influence = influence;
-	}
-
-	public Set<DecisionNode> getChildren() {
+	
+	public List<DecisionNode> getChildren() {
 		return children;
 	}
 
-	public void setChildren(Set<DecisionNode> children) {
+	public void setChildren(List<DecisionNode> children) {
 		this.children = children;
 	}
 
-	public DecisionNode getParent() {
-		return parent;
+	
+	public List<DecisionParent> getParents() {
+		return parents;
 	}
 
-	public void setParent(DecisionNode parent) {
-		this.parent = parent;
-	}
-
-	public float getStrengh() {
-		return strength;
-	}
-
-	public void setStrengh(float strengh) {
-		this.strength = strengh;
+	public void setParents(List<DecisionParent> parents) {
+		this.parents = parents;
 	}
 
 	@Override

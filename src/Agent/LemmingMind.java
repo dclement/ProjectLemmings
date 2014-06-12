@@ -2,12 +2,15 @@ package Agent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 import org.janusproject.kernel.status.Status;
 import org.janusproject.kernel.status.StatusFactory;
 
+import Agent.DecisionTree.DecisionNode;
 import environment.Body;
 import environment.Direction;
 import environment.Entity;
@@ -26,13 +29,14 @@ import environment.Perception;
 public class LemmingMind  extends Animat<LemmingsBody> {
 
 		private final Random rnd = new Random();
-
+		private Stack<DecisionNode> path;
 		/**
 		 * @param body is the body to attached to this ghost.
 		 */
 				
-		public LemmingMind() {
-			// TODO Auto-generated constructor stub
+		public LemmingMind(DecisionNode startingNode) {
+			path = new Stack<DecisionNode>();
+			path.push(startingNode);
 		}
 
 		private List<Direction> extractFreeDirections(List<Perception> list) {
@@ -78,6 +82,18 @@ public class LemmingMind  extends Animat<LemmingsBody> {
 		
 		@Override
 		public Status live() {
+			
+			//Algo:
+			/*
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 * 
+			 */
+			
 			
 			if(!isDead())
 			{

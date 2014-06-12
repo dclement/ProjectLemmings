@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import Agent.DecisionTree.DecisionNode;
 import environment.Environment;
 import launcher.FrameworkLauncher;
 
@@ -22,6 +23,7 @@ public class SpawnerLemmings extends Thread{
 	/**
 	 * Position du spwaner
 	 */
+	private DecisionNode graph; 
 	public int posx;
 	public int posy;
 	public Environment env;
@@ -32,6 +34,9 @@ public class SpawnerLemmings extends Thread{
 		this.env = env;
 		this.posx = posx;
 		this.posy = posy;
+		
+		graph = new DecisionNode();
+		
 	}
 	
 	/**
@@ -58,7 +63,7 @@ public class SpawnerLemmings extends Thread{
 		if(this.numberLemmingsLeft>0)
 		{
 			//position x, position y, distance perception, direction départ, lemmings chute d'une case au depart
-			LemmingMind lem = new LemmingMind();
+			LemmingMind lem = new LemmingMind(graph);
 			FrameworkLauncher.launchAgent(lem,new Point(this.posx, this.posy));
 			Lemmings.add(lem);
 			this.numberLemmingsLeft--;
