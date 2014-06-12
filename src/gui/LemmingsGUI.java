@@ -3,10 +3,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -17,13 +14,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -81,59 +75,41 @@ public class LemmingsGUI extends JFrame implements KeyListener, MouseListener {
 		this.environment = env;
 				
 		try {
-			BufferedImage Wall_img_tmp = ImageIO.read(new File(getClass().getResource("mur.png").toURI()));
+			BufferedImage Wall_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("mur.png"));
 		  	Wall_img= resizeImage(Wall_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		try {
-			BufferedImage Spawner_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+			BufferedImage Spawner_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("porte.png"));
 			Spawner_img= resizeImage(Spawner_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		try {
-			BufferedImage Jump_img_tmp = ImageIO.read(new File(getClass().getResource("jump.png").toURI()));
+			BufferedImage Jump_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("jump.png"));
 	    	Jump_img= resizeImage(Jump_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		try {
-			BufferedImage EndArea_img_tmp = ImageIO.read(new File(getClass().getResource("porte.png").toURI()));
+			BufferedImage EndArea_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("porte.png"));
 	    	EndArea_img= resizeImage(EndArea_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		try {
-			BufferedImage Lemming_img_tmp = ImageIO.read(new File(getClass().getResource("Lemming.png").toURI()));
+			BufferedImage Lemming_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("lemming.png"));
 	    	Lemming_img= resizeImage(Lemming_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		try {
-			BufferedImage Pike_img_tmp = ImageIO.read(new File(getClass().getResource("Pike.png").toURI()));
+			BufferedImage Pike_img_tmp = ImageIO.read(this.getClass().getResourceAsStream("pike.png"));
 	    	Pike_img= resizeImage(Pike_img_tmp, CELL_WIDTH, CELL_HEIGHT);
 	    } catch (IOException e) {
 	    	System.err.println(e.getMessage());
-	    } catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	    }
 		
 		GridPanel gp = new GridPanel();
 		gp.addMouseListener(this);
