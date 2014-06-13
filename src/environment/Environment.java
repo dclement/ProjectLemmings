@@ -359,7 +359,11 @@ public class Environment {
 				
 			}
 		}
+<<<<<<< HEAD
 		
+=======
+	
+>>>>>>> origin/master
 		List<Perception> list;
 		for(Body body : this.bodies.values()) {
 			list = perceive((AIBody) body);
