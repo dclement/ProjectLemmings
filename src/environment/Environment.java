@@ -393,7 +393,7 @@ public class Environment {
 				int x = position.x + direction.dx;
 				int y = position.y + direction.dy;
 				//Vérifie que ce soit ni en bordure ni un block
-				if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y]==null)
+				if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y+1]==null)
 				{
 					this.grid[x][y+1]=new Wall();
 					body.setAppliedInfluence(body.consumeInfluence());
