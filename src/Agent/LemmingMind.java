@@ -115,8 +115,8 @@ public class LemmingMind extends Animat<LemmingsBody> {
 				path.pop();
 			}
 		}
-
-		newDecisionNode.enterNode();
+		List<Perception> perception = this.getPerceivedObjects();
+		newDecisionNode.enterNode(perception);
 		this.path.push(newDecisionNode);
 		Direction desiredDirection = null;
 		
@@ -129,8 +129,6 @@ public class LemmingMind extends Animat<LemmingsBody> {
 
 			// considering it
 			// TODO Pick next action to execute
-			List<Perception> perception = this.getPerceivedObjects();
-			
 
 			// Point d'arrive
 			Perception EndAreaTracking = extractEndArea(perception);
@@ -192,7 +190,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	// a really heavy penalization would be 2
 	// a really light penalization would be 10
 	// x must be lower than 7
-	// -ln((x+2)/4)/y+0.2 :
+	// -ln((x+2)/4)/y+0.1 :
 
 	protected double computeBonus(int index, double strength) {
 		return -Math.log((index + 2) / 4) / strength + 0.1;

@@ -345,27 +345,7 @@ public class Environment {
 				
 			}
 		}
-		
-		/* Code original 
-		Collection<MotionInfluence> influences = new ArrayList<MotionInfluence>();
-		MotionInfluence influence;
-		
-		
-		for(Body body : this.bodies.values()) {
-			influence = body.consumeInfluence();
-			if (influence!=null) {
-				influences.add(influence);
-			}
-		}
-		
-		if (!influences.isEmpty()) {
-			this.changed.set(false); // 
-			applyInfluences(influences, this.timeManager);
-			if (this.changed.get()) {
-				fireEnvironmentChange();
-			}
-		}*/
-		
+	
 		List<Perception> list;
 		for(Body body : this.bodies.values()) {
 			list = perceive((AIBody) body);

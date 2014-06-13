@@ -8,6 +8,7 @@ import environment.Action;
 import environment.Direction;
 import environment.Environment;
 import environment.Influence;
+import environment.Perception;
 
 public class DecisionNode implements Comparable {
 	
@@ -18,8 +19,7 @@ public class DecisionNode implements Comparable {
 	//Default insertion strength
 	public static float INSERTION_STRENGTH = 0.70f;
 	//used to build children nodes taking into account the environment 
-	private Environment env; 
-	
+		
 	private boolean entered=false;
 		
 	private List<DecisionLink> children;
@@ -40,33 +40,61 @@ public class DecisionNode implements Comparable {
 	}
 	
 	
-	public DecisionNode(DecisionNode[][] nodeMap,Point wc, Environment env){
+	public DecisionNode(DecisionNode[][] nodeMap,Point wc){
 		//parentNode
-		this.env = env;
 		this.worldCoordinates = wc;
 		this.entered=false; 
 		this.parents = new ArrayList<DecisionLink>();
 		this.nodeMap[wc.x][wc.y] = this;
 	}
 	
-	public DecisionNode(DecisionLink parent,DecisionNode[][] nodeMap,Point wc, Environment env){
-		this(nodeMap,wc, env);
+	public DecisionNode(DecisionLink parent,DecisionNode[][] nodeMap,Point wc){
+		this(nodeMap,wc);
 		this.parents.add(parent); 
 	}
 	
-	public void enterNode(){ //TODO add a way to build the node taking the environment surroundings into account
+	
+	
+	public List<Influence> getPossibleInfluences(List<Perception> percepts){
+		List<Influence> retList = new ArrayList<Influence>();
+		
+		Perception[][] perceptionMap = new Perception[5][];
+		for(int i =0 ; i < perceptionMap.length;i++){
+			perceptionMap[i] = new Perception[5];
+		}
+		
+		for(int i=0; i< percepts.size();i++){
+			Perception percept= percepts.get(i);
+			perceptionMap[percept.getDirection().dx*percept.getDistance()][percept.getDirection().dy*percept.getDistance()] = percept; 
+		}
+		
+		for(Action action : Action.values()){
+			List<Direction> pdir= action.getPossibleDirections();
+			for(Direction dir: pdir){
+				if((perceptionMap[dir.dx][dir.dy].isFree()&& action != Action.DIG) || (action == Action.DIG && (perceptionMap[dir.dx][dir.dy].isWall()||perceptionMap[dir.dx][dir.dy].isJump()) )){
+					retList.add(new Influence(dir,action));
+				}
+			}
+		}
+		return retList;
+	}
+	
+	
+	public void enterNode(List<Perception> percepts){ //TODO add a way to build the node taking the environment surroundings into account
 		if(!entered){
-			children = new ArrayList<DecisionLink>();		
-			for(Direction dir:Direction.values()){
+			children = new ArrayList<DecisionLink>();	
+			
+			List<Influence> possibleInfluences = getPossibleInfluences(percepts);
+			for(Influence inf:possibleInfluences){
 				DecisionNode child;
 				if(this.nodeMap[worldCoordinates.x][worldCoordinates.y]!=null){
 					child = this.nodeMap[worldCoordinates.x][worldCoordinates.y];
 				}
 				else{
-					child = new DecisionNode(this.nodeMap,new Point(this.worldCoordinates.x + dir.dx,this.worldCoordinates.y+dir.dy),env);
+					child = new DecisionNode(this.nodeMap,new Point(this.worldCoordinates.x + inf.getDirection().dx,this.worldCoordinates.y+inf.getDirection().dy));
 				}
-				DecisionLink childlink = new DecisionLink(this,child,new Influence(dir),INSERTION_STRENGTH);
-				child.addParent(childlink);;
+				DecisionLink childlink = new DecisionLink(this,child,inf,INSERTION_STRENGTH);
+				child.addParent(childlink);
 				children.add(childlink);
 			}
 			//TODO add other kinds of influences ( actions, bridge, dig ... etc )
@@ -80,6 +108,7 @@ public class DecisionNode implements Comparable {
 		if(i == this.children.size()){
 			return null;
 		}
+		
 		else return this.children.get(i).getChild();
 	}
 	

@@ -20,6 +20,10 @@ public class Influence {
 		this(null, dir);
 	}
 	
+	public Influence(Direction dir, Action act){
+		this(null, dir,act);
+	}
+	
 	public Influence(AgentAddress emiter, Direction dir){
 		this(emiter, dir, Action.WALK);
 	}
