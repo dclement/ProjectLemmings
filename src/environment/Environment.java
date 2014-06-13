@@ -330,9 +330,11 @@ public class Environment {
 		}
 	}
 	//TODO en vrai je comprend pas à quoi servent ces environments Change et init.getAndSet blablabla
-	public void runBehaviour() {
+	public void runBehaviour() 
+	{
 		
-		for(Body body : this.bodies.values()){
+		for(Body body : this.bodies.values())
+		{
 			Influence mi = body.getInfluence();
 			
 			if(mi!=null)
@@ -348,7 +350,7 @@ public class Environment {
 				case WALK:
 					move(body,mi.getDirection());
 					break;
-				case FALLING:
+				case FALL:
 					move(body,mi.getDirection());
 					break;
 				default:
@@ -359,16 +361,15 @@ public class Environment {
 				
 			}
 		}
-<<<<<<< HEAD
-		
-=======
-	
->>>>>>> origin/master
 		List<Perception> list;
-		for(Body body : this.bodies.values()) {
+		for(Body body : this.bodies.values()) 
+		{
 			list = perceive((AIBody) body);
-			if (list==null) list = Collections.emptyList();
-			body.setPerceptions(list);
+			if (list==null) 
+			{
+				list = Collections.emptyList();
+				body.setPerceptions(list);
+			}
 		}
 	}
 
