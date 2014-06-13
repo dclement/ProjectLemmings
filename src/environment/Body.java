@@ -13,7 +13,7 @@ public abstract class Body implements EnvironmentObject {
 	private boolean falling;
 	private boolean dead;
 	private Influence influence; 
-
+	private Influence AppliedInfluence;
 	private List<Perception> perceptions;
 	
 	private AgentAddress agentaddress; 
@@ -132,12 +132,16 @@ public abstract class Body implements EnvironmentObject {
 		return this.perceptions;
 	}
 
-	public Influence getMotionInfluence() {
+	public Influence getInfluence() {
 		return influence;
 	}
 
-	public void setMotionInfluence(Influence  motionInfluence) {
-		this.influence = motionInfluence;
+	public void setInfluence(Influence influence) {
+		this.influence = influence;
+	}
+
+	public Influence getAppliedInfluence() {
+		return AppliedInfluence;
 	}
 	
 	public Influence consumeInfluence(){

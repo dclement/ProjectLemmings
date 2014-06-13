@@ -42,7 +42,7 @@ public class SpawnerLemmings extends Thread{
 				this.worldmodel[i][j]=null;
 			}
 		}
-		graph = new DecisionNode(worldmodel,new Point(this.posx, this.posy));
+		graph = new DecisionNode(worldmodel,new Point(this.posx, this.posy),env);
 		
 	}
 	

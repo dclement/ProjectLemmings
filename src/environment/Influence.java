@@ -29,9 +29,7 @@ public class Influence {
 		this.direction = dir;
 		this.action = act;
 	}
-	
-	
-	
+		
 	public Direction getDirection() {
 		return direction;
 	}
@@ -54,6 +52,15 @@ public class Influence {
 
 	public void setEmiter(AgentAddress emiter) {
 		this.emiter = emiter;
+	}
+	
+	public boolean equals(Influence inf){
+		if(inf==null)
+			return false; 
+		if(inf.getAction()==this.action && inf.getDirection()==this.direction)
+			return true;
+		else 
+			return false;
 	}
 	
 }

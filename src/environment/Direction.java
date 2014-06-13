@@ -44,6 +44,9 @@ public enum Direction {
 	SOUTHEAST(+1,+1) {
 		@Override
 		public Direction opposite() { return SOUTHWEST; }
+	},
+	ANY(0,0){
+		public Direction opposite(){return ANY;}
 	};
 	
 	/** Relative coordinate of the direction.
@@ -63,6 +66,21 @@ public enum Direction {
 		this.dy = y;
 	}
 
+	public static boolean isAlike(Direction dir , Direction dir2){
+		if(dir==ANY || dir2 == ANY){
+			return true;
+		}
+		if(dir.dx !=0){
+			if(dir2.dx==dir.dx)
+				return true;
+		}
+		if(dir.dy !=0){
+			if(dir2.dy == dir.dy)
+				return true;
+		}
+		return false;
+	}
+	
 	/** Replies a random direction.
 	 * 
 	 * @return a random direction.

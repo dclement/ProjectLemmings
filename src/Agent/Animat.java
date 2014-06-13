@@ -110,12 +110,16 @@ public abstract class Animat<ABT extends AIBody> extends Agent {
 		this.getBody().setOrientation(dir);
 	}
 	
-	protected final void setMotionInfluence(Influence inf){
-		this.getBody().setMotionInfluence(inf);
+	protected final void setInfluence(Influence inf){
+		this.getBody().setInfluence(inf);
 	}
 	
 	protected final boolean isFalling(){
 		return this.getBody().isFalling();
+	}
+	
+	protected final Influence getAppliedInfluence(){
+		return this.getBody().getAppliedInfluence();
 	}
 	
 	protected final boolean isDead(){

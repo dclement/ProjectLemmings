@@ -1,5 +1,6 @@
 package Agent.DecisionTree;
 
+import Agent.Effect;
 import environment.Influence;
 
 public class DecisionLink {
@@ -17,6 +18,17 @@ public class DecisionLink {
 		this.influence = influence;
 	}
 
+	public void affectLink(double strength, Effect effect){
+		if(effect == Effect.PENALIZE){
+			double value = strength*this.strength;
+			this.strength-=value;
+		}
+		else{
+			double value = strength*(1-this.strength);
+			this.strength += value;
+		}
+	}
+	
 	public float getStrength() {
 		return strength;
 	}
