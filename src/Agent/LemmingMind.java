@@ -105,13 +105,13 @@ public class LemmingMind extends Animat<LemmingsBody> {
 		// http://lite4.framapad.org/p/F8mul3DbRA
 
 		Influence lastAppliedInfluence = this.getAppliedInfluence();
-		DecisionNode newDecisionNode = path.peek().getChildrenWithInfluence(
-				lastAppliedInfluence);
-		if (isInStack(newDecisionNode)) { // Looping !
-
+		DecisionNode newDecisionNode = path.peek().getChildrenWithInfluence(lastAppliedInfluence);
+		if (isInStack(newDecisionNode)) 
+		{ 	// Looping !
 			affectPath(3, 10, Effect.PENALIZE);
 			// remove loop from path;
-			while (path.peek() != newDecisionNode) {
+			while (path.peek() != newDecisionNode) 
+			{
 				path.pop();
 			}
 		}

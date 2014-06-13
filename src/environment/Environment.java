@@ -331,40 +331,34 @@ public class Environment {
 	}
 	//TODO en vrai je comprend pas à quoi servent ces environments Change et init.getAndSet blablabla
 	public void runBehaviour() {
-	
-		
-	/*	if (this.init.getAndSet(false)) {
-			fireEnvironmentChange();
-		}
-	*/
 		
 		for(Body body : this.bodies.values()){
-			Influence mi = body.consumeInfluence();
-			if(mi!=null){
-				this.move(body, mi.getDirection());
+			Influence mi = body.getInfluence();
+			
+			if(mi!=null)
+			{
+				switch( mi.getAction())
+				{
+				case DIG:
+					dig(body,mi.getDirection());
+					break;
+				case BRIDGE:
+					bridge(body,mi.getDirection());
+					break;
+				case WALK:
+					move(body,mi.getDirection());
+					break;
+				case FALLING:
+					move(body,mi.getDirection());
+					break;
+				default:
+					break;
+				}
+				
+				//this.move(body, mi.getDirection());
 				
 			}
 		}
-		
-		/* Code original 
-		Collection<MotionInfluence> influences = new ArrayList<MotionInfluence>();
-		MotionInfluence influence;
-		
-		
-		for(Body body : this.bodies.values()) {
-			influence = body.consumeInfluence();
-			if (influence!=null) {
-				influences.add(influence);
-			}
-		}
-		
-		if (!influences.isEmpty()) {
-			this.changed.set(false); // 
-			applyInfluences(influences, this.timeManager);
-			if (this.changed.get()) {
-				fireEnvironmentChange();
-			}
-		}*/
 		
 		List<Perception> list;
 		for(Body body : this.bodies.values()) {
@@ -373,7 +367,68 @@ public class Environment {
 			body.setPerceptions(list);
 		}
 	}
-	
+
+
+	private void bridge(Body body, Direction direction) {
+		//Recupere la position du corps, applique la direction
+		Point position = getPosition(body);
+		if (position!=null && direction!=null) 
+		{
+			int x = position.x + direction.dx;
+			int y = position.y + direction.dy;
+			//Vérifie que ce soit ni en bordure ni un block
+			if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y]==null)
+			{
+				this.grid[x][y+1]=new Wall();
+				body.setAppliedInfluence(body.consumeInfluence());
+				move(body,direction);
+			}else if(x>=0 && y>=0 && x<this.width && y<this.height)
+			{				
+				//On adapte l'influence
+				Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction, Action.WALK);
+				body.setAppliedInfluence(mi);
+				//Si block vide mais pas en bordure alors on fait un simple Walk
+				move(body,direction);
+
+			}else
+			{
+				Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction.opposite(), Action.WALK);
+				body.setAppliedInfluence(mi);
+				move(body,direction.opposite());
+			}
+		}
+	}
+
+	private void dig(Body body, Direction direction) {
+		//Recupere la position du corps, applique la direction
+		Point position = getPosition(body);
+		if (position!=null && direction!=null) 
+		{
+			int x = position.x + direction.dx;
+			int y = position.y + direction.dy;
+			//Vérifie que ce soit ni un block de bordure ni un block vide
+			if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y]!=null)
+			{
+				this.grid[x][y]=null;
+				move(body,direction);
+				body.setAppliedInfluence(body.consumeInfluence());
+				
+			}else if(x>=0 && y>=0 && x<this.width && y<this.height)
+			{
+				//Si block vide mais pas en bordure alors on fait un simple Walk
+				move(body,direction);
+				//On adapte l'influence
+				Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction, Action.WALK);
+				body.setAppliedInfluence(mi);
+			}else
+			{
+				Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction.opposite(), Action.WALK);
+				body.setAppliedInfluence(mi);
+				move(body,direction.opposite());
+			}
+		}
+	}
+
 	/** Retreive and reply the position of the given body.
 	 * 
 	 * @param body is the body to search for.

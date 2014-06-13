@@ -144,6 +144,9 @@ public abstract class Body implements EnvironmentObject {
 		return AppliedInfluence;
 	}
 	
+	public void setAppliedInfluence(Influence appInf) {
+		this.AppliedInfluence = appInf;
+	}
 	public Influence consumeInfluence(){
 		if(this.influence!=null){
 			Influence inf = this.influence;
