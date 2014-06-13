@@ -104,34 +104,36 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	public Status live() {
 		// http://lite4.framapad.org/p/F8mul3DbRA
 
-		//we retrieve the influence that ended up being applied whether or not it was the expected one
+		// we retrieve the influence that ended up being applied whether or not
+		// it was the expected one
 		Influence lastAppliedInfluence = this.getAppliedInfluence();
-		DecisionNode newDecisionNode = path.peek().getChildWithInfluence(lastAppliedInfluence);
-		//if influence was Dig or Bridge, The environment was modified, we therefore must 
+		DecisionNode newDecisionNode = path.peek().getChildWithInfluence(
+				lastAppliedInfluence);
+		// if influence was Dig or Bridge, The environment was modified, we
+		// therefore must
 		List<Perception> perception = this.getPerceivedObjects();
-		if(lastAppliedInfluence.getAction()== Action.DIG){
+		if (lastAppliedInfluence.getAction() == Action.DIG) {
 			newDecisionNode.updateParentsOnRemove();
 		}
-		if(lastAppliedInfluence.getAction()==Action.BRIDGE){
-			Direction dir=lastAppliedInfluence.getDirection()==Direction.EAST? Direction.SOUTHEAST : Direction.SOUTHWEST;
-			path.peek().getChildWithInfluence(new Influence(dir,Action.FALL)).updateParentsOnAdd();
+		if (lastAppliedInfluence.getAction() == Action.BRIDGE) {
+			Direction dir = lastAppliedInfluence.getDirection() == Direction.EAST ? Direction.SOUTHEAST
+					: Direction.SOUTHWEST;
+			path.peek().getChildWithInfluence(new Influence(dir, Action.FALL))
+					.updateParentsOnAdd();
 		}
-		
-		
-		if (isInStack(newDecisionNode)) 
-		{ 	// Looping !
+
+		if (isInStack(newDecisionNode)) { // Looping !
 			affectPath(3, 10, Effect.PENALIZE);
 			// remove loop from path;
-			while (path.peek() != newDecisionNode) 
-			{
+			while (path.peek() != newDecisionNode) {
 				path.pop();
 			}
 		}
-		
+
 		newDecisionNode.enterNode(perception);
 		this.path.push(newDecisionNode);
 		Direction desiredDirection = null;
-		
+
 		if (isDead()) {
 			affectPath(6, 2, Effect.PENALIZE);
 			killMe();
@@ -144,7 +146,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 
 			// Point d'arrive
 			Perception EndAreaTracking = extractEndArea(perception);
-			
+
 			// Figuring out the desired direction
 			if (EndAreaTracking != null) {
 				// TODO Compute Distance to goal and increment or decrement path
@@ -161,36 +163,22 @@ public class LemmingMind extends Animat<LemmingsBody> {
 				this.distanceToGoal = newDistance;
 				desiredDirection = EndAreaTracking.getDirection();
 			} else {
-				List<Direction> freeDirections = extractFreeDirections(perception);
-				
-				if (freeDirections.contains(getOrientation())) {
-					desiredDirection = getOrientation();
-				} else {
-					desiredDirection = freeDirections.get(this.rnd.nextInt(freeDirections.size()));
-					}
-				}
+				desiredDirection = getOrientation();
 			}
-			
-			if (desiredDirection != null) {
-			
-				DecisionLink linkToTake = newDecisionNode.getBestChildrenWithCondition(desiredDirection, Action.ANY);
-				
-				this.setInfluence(linkToTake.getInfluence());
-			} else {
-				// this.setMotionInfluence(new
-				// MotionInfluence(desiredDirection));
-				// influeence
-				// Update body if body is falling
-				System.out.println("Fall " + isFalling());
-				if (isFalling()) {
-					this.setInfluence(new Influence(desiredDirection));
-				} else {
-					// Bloquer dans un trou
-					System.out.println("kill");
-					killMe();
-				}
+		}
+
+		if (desiredDirection != null) {
+
+			DecisionLink linkToTake = newDecisionNode.getBestChildrenWithCondition(desiredDirection, Action.ANY);
+			if(linkToTake==null){
+				linkToTake=newDecisionNode.getBestChildren();
 			}
-		
+			if(linkToTake==null){//blocked ?
+				System.out.println("kill");
+				killMe();
+			}
+			this.setInfluence(linkToTake.getInfluence());
+		} 
 
 		return StatusFactory.ok(this);
 	}

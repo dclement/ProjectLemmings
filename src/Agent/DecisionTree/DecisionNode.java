@@ -46,6 +46,7 @@ public class DecisionNode implements Comparable {
 		this.worldCoordinates = wc;
 		this.entered=false; 
 		this.parents = new ArrayList<DecisionLink>();
+		this.nodeMap = nodeMap;
 		this.nodeMap[wc.x][wc.y] = this;
 	}
 	
@@ -237,20 +238,20 @@ public class DecisionNode implements Comparable {
 		return retval;
 	}
 	
-	public DecisionNode getBestChildren(){
+	public DecisionLink getBestChildren(){
 		if(children.size() ==0){
 			return null;
 		}
 		float bestStrength=0;
-		DecisionNode bestDecisionNode = children.get(0).getChild();
+		DecisionLink bestDecisionLink = children.get(0);
 		for( DecisionLink child: children){
 			float str = child.getStrength();
 			if(str>bestStrength){
 				bestStrength = str; 
-				bestDecisionNode = child.getChild();
+				bestDecisionLink = child;
 			}
 		}
-		return bestDecisionNode;
+		return bestDecisionLink;
 	}
 	
 	public DecisionLink getBestChildrenWithCondition(Direction dir, Action action){
