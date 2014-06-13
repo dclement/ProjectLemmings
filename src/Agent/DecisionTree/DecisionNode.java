@@ -3,6 +3,7 @@ package Agent.DecisionTree;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import environment.Action;
 import environment.Direction;
@@ -17,7 +18,7 @@ public class DecisionNode implements Comparable {
 	private Point startingPoint;
 	private DecisionNode[][] nodeMap;
 	//Default insertion strength
-	public static float INSERTION_STRENGTH = 0.70f;
+	public static float INSERTION_STRENGTH = 0.60f;
 	//used to build children nodes taking into account the environment 
 		
 	private boolean entered=false;
@@ -53,8 +54,114 @@ public class DecisionNode implements Comparable {
 		this.parents.add(parent); 
 	}
 	
+	public void updateChildren(List<Perception> percepts){
+		
+	}
+
+	public void updateParentsOnRemove() {
+		
+		//removing now wrong links
+		Stack<DecisionLink> parentToRemove= new Stack();
+		for(DecisionLink parent:this.getParents()){
+			Action act = parent.getInfluence().getAction();
+			if(act==Action.DIG){ //The action Ain't valid noO more NoOo
+				parent.getParent().removeChildren(parent);
+				parentToRemove.push(parent);
+			}
+		}
+		while(!parentToRemove.isEmpty()){
+			this.parents.remove(parentToRemove.pop());
+		}
+
+		//Adding new possible Links 
+		for(int i=-1; i<=1;i++){
+			for(int j =-1 ; j<=1; j++){
+				DecisionNode node= nodeMap[this.worldCoordinates.x+i][this.worldCoordinates.y+j];
+				if(node!=null){
+					Direction dir=Direction.createDirection(i, j);
+					List<Influence> newPossibleInfluence = new ArrayList<Influence>();
+					switch(dir){
+					case NORTHWEST:
+						newPossibleInfluence.add(new Influence(Direction.SOUTHEAST,Action.FALL));
+						newPossibleInfluence.add(new Influence(Direction.SOUTHEAST,Action.BRIDGE));
+						break;
+					case NORTH:
+						newPossibleInfluence.add(new Influence(Direction.SOUTHEAST,Action.FALL));
+						break;
+					case NORTHEAST:
+						newPossibleInfluence.add(new Influence(Direction.SOUTHWEST,Action.FALL));
+						newPossibleInfluence.add(new Influence(Direction.SOUTHWEST,Action.BRIDGE));
+						break;
+					case EAST:
+						newPossibleInfluence.add(new Influence(Direction.WEST,Action.WALK));
+						break;
+					case WEST:
+						newPossibleInfluence.add(new Influence(Direction.EAST,Action.WALK));
+						break;
+					case SOUTHEAST:
+						newPossibleInfluence.add(new Influence(Direction.NORTHWEST,Action.JUMP));
+						break;
+					case SOUTHWEST:
+						newPossibleInfluence.add(new Influence(Direction.NORTHEAST,Action.JUMP));
+						break;
+					default:
+						break;
+					}
+					for(Influence influ: newPossibleInfluence){
+						float mod = (influ.getAction() == Action.WALK)? 0.1f : -0.1f;
+						mod = (influ.getAction()==Action.FALL) ? mod : 0f; 
+						DecisionLink childlink = new DecisionLink(node,this,influ,INSERTION_STRENGTH+mod);
+						this.addParent(childlink);
+						node.getChildren().add(childlink);
+					}
+				
+				}				
+			}
+		}
+	}
+	
+	public void updateParentsOnAdd(){
+		//removing now wrong links
+		Stack<DecisionLink> parentToRemove= new Stack<DecisionLink>();
+		for(DecisionLink parent:this.getParents()){
+			Action act = parent.getInfluence().getAction();
+			if(act==Action.WALK||act==Action.FALL||act==Action.BRIDGE){ //These actions Ain't valid noO more NoOo
+				parent.getParent().removeChildren(parent);
+				parentToRemove.push(parent);
+			}
+		}
+		while(!parentToRemove.isEmpty()){
+			this.parents.remove(parentToRemove.pop());
+		}
+		
+		for(int i=-1; i<=1;i++){
+			for(int j =-1 ; j<=1; j++){
+				DecisionNode node= nodeMap[this.worldCoordinates.x+i][this.worldCoordinates.y+j];
+				if(node!=null){
+					Direction dir=Direction.createDirection(i, j);
+					List<Influence> newPossibleInfluence = new ArrayList<Influence>();
+					switch(dir){
+					case EAST:
+						newPossibleInfluence.add(new Influence(Direction.WEST,Action.DIG));
+						break;
+					case WEST:
+						newPossibleInfluence.add(new Influence(Direction.EAST,Action.DIG));
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
 	
 	
+	
+	private void removeChildren(DecisionLink parent) {
+		this.parents.remove(parent);		
+	}
+
+
 	public List<Influence> getPossibleInfluences(List<Perception> percepts){
 		List<Influence> retList = new ArrayList<Influence>();
 		
@@ -71,7 +178,7 @@ public class DecisionNode implements Comparable {
 		for(Action action : Action.values()){
 			List<Direction> pdir= action.getPossibleDirections();
 			for(Direction dir: pdir){
-				if((perceptionMap[dir.dx][dir.dy].isFree()&& action != Action.DIG) || (action == Action.DIG && (perceptionMap[dir.dx][dir.dy].isWall()||perceptionMap[dir.dx][dir.dy].isJump()) )){
+				if((perceptionMap[dir.dx+2][dir.dy+2].isFree()&& action != Action.DIG && action!=Action.JUMP) || (action == Action.DIG && (perceptionMap[dir.dx+2][dir.dy+2].isWall()||perceptionMap[dir.dx+2][dir.dy+2].isJump()) ) || (action==Action.JUMP && perceptionMap[dir.dx+2][dir.dy+2].isFree() && perceptionMap[2][3].isJump())){
 					retList.add(new Influence(dir,action));
 				}
 			}
@@ -93,7 +200,12 @@ public class DecisionNode implements Comparable {
 				else{
 					child = new DecisionNode(this.nodeMap,new Point(this.worldCoordinates.x + inf.getDirection().dx,this.worldCoordinates.y+inf.getDirection().dy));
 				}
-				DecisionLink childlink = new DecisionLink(this,child,inf,INSERTION_STRENGTH);
+				
+				//Walking is the best decision EVARRR
+				float mod = (inf.getAction() == Action.WALK)? 0.1f : -0.1f;
+				mod = (inf.getAction()==Action.FALL) ? mod : 0f; 
+				
+				DecisionLink childlink = new DecisionLink(this,child,inf,INSERTION_STRENGTH+mod);
 				child.addParent(childlink);
 				children.add(childlink);
 			}
@@ -101,7 +213,7 @@ public class DecisionNode implements Comparable {
 		}
 	}
 
-	public DecisionNode getChildrenWithInfluence(Influence in){
+	public DecisionNode getChildWithInfluence(Influence in){
 		int i =0; 
 		while(i<this.children.size() && !this.children.get(i).getInfluence().equals(in))
 			i++;
@@ -183,6 +295,8 @@ public class DecisionNode implements Comparable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 
 	
 }

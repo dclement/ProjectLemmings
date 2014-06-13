@@ -66,6 +66,19 @@ public enum Direction {
 		this.dy = y;
 	}
 
+	public static Direction createDirection(int x , int y ){
+		if(x==-1 && y==-1) return NORTHWEST;
+		if(x==0 && y==-1) return NORTH; 
+		if(x==1 && y ==-1) return NORTHEAST;
+		if(x==-1 && y==0) return WEST;
+		if(x==0 && y ==0) return ANY;
+		if(x==1 && y==0) return EAST; 
+		if(x==-1 && y==1) return SOUTHWEST;
+		if(x==0 && y==1) return SOUTH;
+		if(x==1 && y==1) return SOUTHEAST;
+		return ANY;
+	}
+	
 	public static boolean isAlike(Direction dir , Direction dir2){
 		if(dir==ANY || dir2 == ANY){
 			return true;

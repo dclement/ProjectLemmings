@@ -104,8 +104,20 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	public Status live() {
 		// http://lite4.framapad.org/p/F8mul3DbRA
 
+		//we retrieve the influence that ended up being applied whether or not it was the expected one
 		Influence lastAppliedInfluence = this.getAppliedInfluence();
-		DecisionNode newDecisionNode = path.peek().getChildrenWithInfluence(lastAppliedInfluence);
+		DecisionNode newDecisionNode = path.peek().getChildWithInfluence(lastAppliedInfluence);
+		//if influence was Dig or Bridge, The environment was modified, we therefore must 
+		List<Perception> perception = this.getPerceivedObjects();
+		if(lastAppliedInfluence.getAction()== Action.DIG){
+			newDecisionNode.updateParentsOnRemove();
+		}
+		if(lastAppliedInfluence.getAction()==Action.BRIDGE){
+			Direction dir=lastAppliedInfluence.getDirection()==Direction.EAST? Direction.SOUTHEAST : Direction.SOUTHWEST;
+			path.peek().getChildWithInfluence(new Influence(dir,Action.FALL)).updateParentsOnAdd();
+		}
+		
+		
 		if (isInStack(newDecisionNode)) 
 		{ 	// Looping !
 			affectPath(3, 10, Effect.PENALIZE);
@@ -115,7 +127,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 				path.pop();
 			}
 		}
-		List<Perception> perception = this.getPerceivedObjects();
+		
 		newDecisionNode.enterNode(perception);
 		this.path.push(newDecisionNode);
 		Direction desiredDirection = null;
