@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><config>
+<environment height="28" width="28">
+<Wall height="0" width="0" x="1" y="11"/>
+<Wall height="0" width="0" x="1" y="12"/>
+<Wall height="0" width="0" x="1" y="13"/>
+<Wall height="0" width="0" x="1" y="14"/>
+<Wall height="0" width="0" x="2" y="2"/>
+<Wall height="0" width="0" x="2" y="3"/>
+<Wall height="0" width="0" x="2" y="4"/>
+<Wall height="0" width="0" x="2" y="14"/>
+<Wall height="0" width="0" x="3" y="4"/>
+<Wall height="0" width="0" x="3" y="14"/>
+<Spawner numberLemmings="20" x="4" y="2"/>
+<Wall height="0" width="0" x="4" y="4"/>
+<Wall height="0" width="0" x="4" y="11"/>
+<Wall height="0" width="0" x="4" y="14"/>
+<Wall height="0" width="0" x="4" y="15"/>
+<Wall height="0" width="0" x="5" y="4"/>
+<Wall height="0" width="0" x="5" y="11"/>
+<Wall height="0" width="0" x="5" y="15"/>
+<Wall height="0" width="0" x="6" y="4"/>
+<Wall height="0" width="0" x="6" y="8"/>
+<Wall height="0" width="0" x="6" y="9"/>
+<Wall height="0" width="0" x="6" y="11"/>
+<Wall height="0" width="0" x="6" y="15"/>
+<Wall height="0" width="0" x="7" y="4"/>
+<Wall height="0" width="0" x="7" y="5"/>
+<Wall height="0" width="0" x="7" y="8"/>
+<Wall height="0" width="0" x="7" y="11"/>
+<Wall height="0" width="0" x="7" y="15"/>
+<Wall height="0" width="0" x="8" y="4"/>
+<Wall height="0" width="0" x="8" y="8"/>
+<Wall height="0" width="0" x="8" y="11"/>
+<Endarea x="8" y="14"/>
+<Wall height="0" width="0" x="8" y="15"/>
+<Wall height="0" width="0" x="9" y="8"/>
+<Wall height="0" width="0" x="9" y="11"/>
+<Wall height="0" width="0" x="10" y="8"/>
+<Wall height="0" width="0" x="10" y="11"/>
+<Wall height="0" width="0" x="11" y="8"/>
+<Wall height="0" width="0" x="11" y="11"/>
+<Wall height="0" width="0" x="12" y="8"/>
+<Wall height="0" width="0" x="12" y="11"/>
+<Pike height="1" width="1" x="13" y="9"/>
+<Wall height="0" width="0" x="13" y="11"/>
+<Wall height="0" width="0" x="14" y="11"/>
+<Wall height="0" width="0" x="15" y="11"/>
+<Pike height="1" width="1" x="16" y="12"/>
+<Wall height="0" width="0" x="17" y="9"/>
+<Wall height="0" width="0" x="17" y="10"/>
+<Wall height="0" width="0" x="17" y="11"/>
+</environment>
+</config>
