@@ -28,6 +28,7 @@ import org.janusproject.kernel.KernelEvent;
 import org.janusproject.kernel.agent.Kernels;
 
 import Agent.Animat;
+import Agent.Dummy;
 import environment.Environment;
 import gui.LemmingsGUI;
 /**
@@ -99,6 +100,7 @@ public class FrameworkLauncher {
 		Kernel k = Kernels.get();
 		if (k==null) throw new IllegalStateException();
 		k.launchDifferedExecutionAgents();
+		k.launchLightAgent(new Dummy());
 		System.out.println(uiSingleton==null);
 		if (uiSingleton!=null) uiSingleton.setVisible(true);
 	}

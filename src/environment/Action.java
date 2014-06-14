@@ -19,13 +19,6 @@ public enum Action {
 			return  Arrays.asList(dirs);
 		}
 	},
-	CLIMB {
-		@Override
-		public List<Direction> getPossibleDirections() {
-			Direction[] dirs=new Direction[] {Direction.NORTHWEST, Direction.NORTHEAST};
-			return  Arrays.asList(dirs);
-		}
-	},
 	JUMP {
 		@Override
 		public List<Direction> getPossibleDirections() {
@@ -36,7 +29,7 @@ public enum Action {
 	WALK {
 		@Override
 		public List<Direction> getPossibleDirections() {
-			Direction[] dirs=new Direction[] {Direction.WEST, Direction.EAST};
+			Direction[] dirs=new Direction[] {Direction.EAST,Direction.WEST};
 			return  Arrays.asList(dirs);
 		}
 	},
@@ -50,19 +43,22 @@ public enum Action {
 	ANY {
 		@Override
 		public List<Direction> getPossibleDirections() {
-			// TODO Auto-generated method stub
-			return null;
+			Direction[] dirs=new Direction[] {Direction.ANY};
+			return Arrays.asList(dirs);
 		}
 	};
 	
 
 	public Direction[] possibleDirection;
 	
-	public boolean equals(Action action){
-		if (action == ANY){
+	public static boolean equal(Action act1, Action act2){
+		if (act1 == ANY || act2==ANY){
 			return true;
 		}
-		else return equals((Object)action);
+		else {
+			boolean retval = (act1==act2);
+			return 	retval;
+		}
 	}
 	
 	public abstract List<Direction> getPossibleDirections();

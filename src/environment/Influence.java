@@ -60,11 +60,16 @@ public class Influence {
 	
 	
 	@Override
+	public String toString() {
+		return "Influence [direction=" + direction + ", action=" + action + ", hash=" + System.identityHashCode(this) +  "]";
+	}
+
+	@Override
 	public boolean equals(Object info){ // We don't want it only to be equal when the object is the same but also when the content is the same
 		Influence inf = (Influence) info;
 		if(inf==null)
 			return false; 
-		if(inf.getAction().equals(this.action) && inf.getDirection()==this.direction)
+		if(Action.equal(inf.getAction(), this.action) && inf.getDirection()==this.direction)
 			return true;
 		else 
 			return false;

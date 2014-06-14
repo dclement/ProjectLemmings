@@ -266,7 +266,7 @@ public class Environment {
 								System.out.println("Dead by pick !! ");
 								//suppression du body dans la grille
 								this.grid[x][y] = null;
-								body.setDead(true);
+								body.setDead(true,DeathReason.DEATH);
 							}
 						}
 						else
@@ -275,7 +275,7 @@ public class Environment {
 							{
 								System.out.println("Lemmings arrivé !! ");
 								//suppression du body dans la grille
-								body.setDead(true);
+								body.setDead(true,DeathReason.ARRIVED);
 								this.grid[position.x][position.y] = null;
 								setTotalLemmingsFinish(getTotalLemmingsFinish() + 1);
 							}
@@ -290,7 +290,7 @@ public class Environment {
 				if(body.isFalling() && isPike(position.x, position.y+1))
 				{
 					System.out.println("Chute Dead by pick !! ");
-					body.setDead(true);
+					body.setDead(true,DeathReason.DEATH);
 					this.grid[position.x][position.y] = null;
 				}
 			}
@@ -309,21 +309,21 @@ public class Environment {
 				switch( mi.getAction())
 				{
 				case DIG:
-					dig(body,mi.getDirection());
+					dig(body,mi.getDirection(),mi);
 					break;
 				case BRIDGE:
-					bridge(body,mi.getDirection());
+					bridge(body,mi.getDirection(),mi);
 					break;
 				case WALK:
-					walk(body,mi.getDirection());
+					walk(body,mi.getDirection(),mi);
 					break;
 				case FALL:
-					move(body,mi.getDirection());
+					fall(body,mi.getDirection(),mi);
 					break;
 				default:
 					break;
 				}
-				
+				//TODO implement jumps!
 				//this.move(body, mi.getDirection());
 				
 			}
@@ -340,8 +340,16 @@ public class Environment {
 		}
 	}
 
+	private void fall(Body body, Direction direction, Influence influence) {
+		Point position = getPosition(body);
+		if(this.grid[position.x][position.y+1]==null){
+			body.setAppliedInfluence(influence);
+			move(body, influence.getDirection());
+		}
+			
+	}
 
-	private void walk(Body body, Direction direction) {
+	private void walk(Body body, Direction direction, Influence influence) {
 		//Recupere la position du corps, applique la direction
 		Point position = getPosition(body);
 		if (position!=null && direction!=null) 
@@ -355,12 +363,12 @@ public class Environment {
 				//Vérifie que ce soit ni en bordure ni un block
 				if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y]==null)
 				{
-					body.setAppliedInfluence(body.consumeInfluence());
+					body.setAppliedInfluence(influence);
 					move(body,direction);
 				}else
 				{				
 					//On adapte l'influence
-					Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction.opposite(), Action.WALK);
+					Influence mi = new Influence(influence.getEmiter(), direction.opposite(), Action.WALK);
 					body.setAppliedInfluence(mi);
 					//Si block vide mais pas en bordure alors on fait un simple Walk
 					move(body,direction);
@@ -368,20 +376,15 @@ public class Environment {
 			}else
 			{
 				body.setFalling(true);
-				Influence mi;
-				if(direction.dx>0 && grid[position.x + direction.dx][position.y + 1] == null)
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHEAST, Action.FALL);
-				else if(direction.dx<0 && grid[position.x + direction.dx][position.y + 1] == null)
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHWEST, Action.FALL);
-				else
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTH, Action.FALL);
+				Influence mi = computeFall(influence,position.x, position.y);
+				
 				body.setAppliedInfluence(mi);
-				move(body,direction);
+				move(body,mi.getDirection());
 			}
 		}
 	}
 
-	private void bridge(Body body, Direction direction) {
+	private void bridge(Body body, Direction direction,Influence influence) {
 		//Recupere la position du corps, applique la direction
 		Point position = getPosition(body);
 		if (position!=null && direction!=null) 
@@ -396,38 +399,50 @@ public class Environment {
 				if(x>=0 && y>=0 && x<this.width && y<this.height && this.grid[x][y+1]==null)
 				{
 					this.grid[x][y+1]=new Wall();
-					body.setAppliedInfluence(body.consumeInfluence());
+					body.setAppliedInfluence(influence);
 					move(body,direction);
 				}else if(x>=0 && y>=0 && x<this.width && y<this.height)
 				{				
 					//On adapte l'influence
-					Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction, Action.WALK);
+					Influence mi = new Influence(influence.getEmiter(), direction, Action.WALK);
 					body.setAppliedInfluence(mi);
 					//Si block vide mais pas en bordure alors on fait un simple Walk
 					move(body,direction);
 	
 				}else
 				{
-					Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction.opposite(), Action.WALK);
+					Influence mi = new Influence(influence.getEmiter(), direction.opposite(), Action.WALK);
 					body.setAppliedInfluence(mi);
 					move(body,direction.opposite());
 				}
 			}else
 			{
 				body.setFalling(true);
-				Influence mi;
-				if(direction.dx>0)
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHEAST, Action.FALL);
-				else
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHWEST, Action.FALL);
+				Influence mi = computeFall(influence,position.x, position.y);
 				
 				body.setAppliedInfluence(mi);
-				move(body,direction);
+				move(body,mi.getDirection());
 			}
 		}
 	}
-
-	private void dig(Body body, Direction direction) {
+	
+	private Influence computeFall(Influence inf, int coordx, int coordy){
+		Influence mi=new Influence(inf.getEmiter(),Direction.SOUTH,Action.FALL); 
+		Direction direction = inf.getDirection();
+		/*if(direction.dx>0 && this.grid[coordx+1][coordy+1]==null)
+			mi = new Influence(inf.getEmiter(), Direction.SOUTHEAST, Action.FALL);
+		else{
+			if(direction.dx<0 && this.grid[coordx-1][coordy+1]==null){
+				mi = new Influence(inf.getEmiter(), Direction.SOUTHWEST, Action.FALL);	
+			}
+			else
+				mi = new Influence(inf.getEmiter(), Direction.SOUTH, Action.FALL);
+		}*/
+		return mi;
+	}
+	
+	
+	private void dig(Body body, Direction direction,Influence influence) {
 		//Recupere la position du corps, applique la direction
 		Point position = getPosition(body);
 		if (position!=null && direction!=null) 
@@ -443,29 +458,25 @@ public class Environment {
 				{
 					this.grid[x][y]=null;
 					move(body,direction);
-					body.setAppliedInfluence(body.consumeInfluence());
-					
+					body.setAppliedInfluence(influence);					
 				}else if(x>=0 && y>=0 && x<this.width && y<this.height)
 				{
 					//Si block vide mais pas en bordure alors on fait un simple Walk
 					move(body,direction);
 					//On adapte l'influence
-					Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction, Action.WALK);
+					Influence mi = new Influence(influence.getEmiter(), direction, Action.WALK);
 					body.setAppliedInfluence(mi);
 				}else
 				{
-					Influence mi = new Influence(body.consumeInfluence().getEmiter(), direction.opposite(), Action.WALK);
+					Influence mi = new Influence(influence.getEmiter(), direction.opposite(), Action.WALK);
 					body.setAppliedInfluence(mi);
 					move(body,direction.opposite());
 				}
 			}else
 			{
 				body.setFalling(true);
-				Influence mi;
-				if(direction.dx>0)
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHEAST, Action.FALL);
-				else
-					mi = new Influence(body.consumeInfluence().getEmiter(), Direction.SOUTHWEST, Action.FALL);
+				Influence mi = computeFall(influence,position.x, position.y);
+				
 				
 				body.setAppliedInfluence(mi);
 				move(body,direction);

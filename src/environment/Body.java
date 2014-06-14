@@ -12,6 +12,7 @@ public abstract class Body implements EnvironmentObject {
 	private Direction orientation;
 	private boolean falling;
 	private boolean dead;
+	private DeathReason reason;
 	private Influence influence; 
 	private Influence AppliedInfluence;
 	private List<Perception> perceptions;
@@ -120,8 +121,13 @@ public abstract class Body implements EnvironmentObject {
 		this.falling = fall;
 	}
 
-	public void setDead(boolean dead) {
+	public void setDead(boolean dead, DeathReason reason) {
 		this.dead = dead;
+		this.reason = reason;
+	}
+	
+	public DeathReason getDeathReason(){
+		return this.reason;
 	}
 	
 	public void setPerceptions(List<Perception> list) {

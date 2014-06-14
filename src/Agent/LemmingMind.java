@@ -2,6 +2,8 @@ package Agent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
@@ -13,7 +15,9 @@ import org.janusproject.kernel.status.StatusFactory;
 import Agent.DecisionTree.DecisionLink;
 import Agent.DecisionTree.DecisionNode;
 import environment.Action;
+import environment.DeathReason;
 import environment.Direction;
+import environment.EndArea;
 import environment.Environment;
 import environment.Influence;
 import environment.Perception;
@@ -29,31 +33,44 @@ public class LemmingMind extends Animat<LemmingsBody> {
 
 	private final Random rnd = new Random();
 	private Stack<DecisionNode> path;
+	private Stack<Influence> influencePath;
+	private Stack<DecisionLink> links;
 	private Influence expectedInfluence;
 	double distanceToGoal;
-
+	private DecisionLink expectedLink;
+	
 	/**
 	 * @param body
 	 *            is the body to attached to this ghost.
 	 */
 
 	public boolean isInStack(DecisionNode dn) {
-		DecisionNode[] dnl = (DecisionNode[]) this.path.toArray();
+	
+		
+		List<DecisionNode> dnl= new ArrayList<>();
+		dnl.addAll(this.path);
 		int i = 0;
-		while (dnl[i] != dn && i < dnl.length) {
+		while(i<dnl.size() && dnl.get(i)!=dn ){
 			i++;
 		}
-		if (i != dnl.length) { // TODO this might end up being REALLY slow ! if
-								// we're not
-			// looping and we've gone a long way
-			return true;
-		} else
+	
+		if(i==dnl.size()){
 			return false;
+		}
+		else
+			return true;
+		
 	}
 
 	public LemmingMind(DecisionNode startingNode) {
 		path = new Stack<DecisionNode>();
 		path.push(startingNode);
+		influencePath = new Stack<Influence>();
+		influencePath.push(new Influence());
+		
+		links = new Stack<>();
+		links.push(new DecisionLink(null,startingNode,influencePath.peek(), 0.5f) );
+		
 		this.distanceToGoal = Double.MAX_VALUE;
 	}
 
@@ -98,48 +115,96 @@ public class LemmingMind extends Animat<LemmingsBody> {
 			}
 		}
 		return etat;
+	
 	}
 
 	@Override
+	public Status activate(Object ... objects){
+		this.path.peek().enterNode(this.getPerceivedObjects());
+		return StatusFactory.ok(this);
+	}
+	
+	@Override
 	public Status live() {
 		// http://lite4.framapad.org/p/F8mul3DbRA
-
+		
 		// we retrieve the influence that ended up being applied whether or not
 		// it was the expected one
 		Influence lastAppliedInfluence = this.getAppliedInfluence();
-		DecisionNode newDecisionNode = path.peek().getChildWithInfluence(
-				lastAppliedInfluence);
+		if(lastAppliedInfluence!=null){
+			System.out.println("last applied: " + lastAppliedInfluence.toString());
+		
+		}
+		DecisionNode newDecisionNode = path.peek().getChildWithInfluence(lastAppliedInfluence);
+			
+		if(newDecisionNode == null){
+			newDecisionNode = path.peek();
+		}
+		DecisionLink tookLink = newDecisionNode.getLink(path.peek(),lastAppliedInfluence);
+		System.out.println("the linking link is: " + tookLink);
+		
+		if(expectedLink!=null && expectedLink!=tookLink){
+			System.out.println("we got the wrong effect applied!");
+			expectedLink.affectLink(computeBonus(1, 4), Effect.PENALIZE);
+		}
+		
 		// if influence was Dig or Bridge, The environment was modified, we
 		// therefore must
 		List<Perception> perception = this.getPerceivedObjects();
-		if (lastAppliedInfluence.getAction() == Action.DIG) {
-			newDecisionNode.updateParentsOnRemove();
+		if(lastAppliedInfluence !=null){
+			if (lastAppliedInfluence.getAction() == Action.DIG) {
+				newDecisionNode.updateParentsOnRemove();
+			}
+			if (lastAppliedInfluence.getAction() == Action.BRIDGE) {
+				Direction dir = lastAppliedInfluence.getDirection() == Direction.EAST ? Direction.SOUTHEAST
+						: Direction.SOUTHWEST;
+				path.peek().getChildWithInfluence(new Influence(dir, Action.FALL))
+						.updateParentsOnAdd();
+			}
 		}
-		if (lastAppliedInfluence.getAction() == Action.BRIDGE) {
-			Direction dir = lastAppliedInfluence.getDirection() == Direction.EAST ? Direction.SOUTHEAST
-					: Direction.SOUTHWEST;
-			path.peek().getChildWithInfluence(new Influence(dir, Action.FALL))
-					.updateParentsOnAdd();
-		}
-
+		
 		if (isInStack(newDecisionNode)) { // Looping !
-			affectPath(3, 10, Effect.PENALIZE);
+			if(tookLink!=null)
+				tookLink.affectLink(computeBonus(2, 7), Effect.PENALIZE);
+			affectPath(2, 10, Effect.PENALIZE);
+			System.out.println("looped, penilizing");
 			// remove loop from path;
 			while (path.peek() != newDecisionNode) {
 				path.pop();
-			}
+				influencePath.pop();
+				links.pop();
+			}			
 		}
-
+		else{
+			this.path.push(newDecisionNode);
+			this.influencePath.push(lastAppliedInfluence);
+			this.links.push(tookLink);
+		}
+	
 		newDecisionNode.enterNode(perception);
-		this.path.push(newDecisionNode);
 		Direction desiredDirection = null;
 
+		
+		//System.out.println("link : " );
+		
+		
 		if (isDead()) {
-			affectPath(6, 2, Effect.PENALIZE);
+			DeathReason dr = this.getDeathReason();
+			if(dr== DeathReason.DEATH){
+				System.out.println("we died so lets set up the path");
+				affectPath(3, 1, Effect.PENALIZE);
+				expectedLink.affectLink(computeBonus(1,2),Effect.PENALIZE );
+				System.out.println(expectedLink);
+				System.out.println(tookLink);
+			}
+			else{
+				System.out.println("we found a solution lets take it!");
+				praiseSolution();
+			}
 			killMe();
 		} else {
 			// increment path strength because we are still here
-			affectPathElement(5, 10, Effect.PRAISE);
+			//affectPathElement(4, 10, Effect.PRAISE);
 
 			// considering it
 			// TODO Pick next action to execute
@@ -149,6 +214,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 
 			// Figuring out the desired direction
 			if (EndAreaTracking != null) {
+				System.out.println("endArea detected");
 				// TODO Compute Distance to goal and increment or decrement path
 				int newDistance = EndAreaTracking.getDistance();
 				Effect effect = null;
@@ -168,15 +234,32 @@ public class LemmingMind extends Animat<LemmingsBody> {
 		}
 
 		if (desiredDirection != null) {
-
-			DecisionLink linkToTake = newDecisionNode.getBestChildrenWithCondition(desiredDirection, Action.ANY);
-			if(linkToTake==null){
-				linkToTake=newDecisionNode.getBestChildren();
+			System.out.println(desiredDirection);
+			DecisionLink linkToTake=newDecisionNode.getBestChildren();
+			DecisionLink linkToTakeDirection = newDecisionNode.getBestChildrenWithCondition(desiredDirection, Action.ANY);
+			if(extractEndArea(perception)!=null){
+				System.out.println("GOGOGO ! " + linkToTakeDirection + " " + linkToTake);
 			}
+			if(linkToTakeDirection!=null){
+				if(linkToTake.getStrength()-linkToTakeDirection.getStrength()>0.1){
+					
+				}
+				else{
+					linkToTake = linkToTakeDirection;
+				}
+				if(extractEndArea(perception)!=null){
+					linkToTake = linkToTakeDirection;
+				}
+			}
+			
+			//}
 			if(linkToTake==null){//blocked ?
 				System.out.println("kill");
 				killMe();
 			}
+			if(linkToTake!=null)
+			System.out.println("picked influence: "+ linkToTake.getInfluence().toString());
+			this.expectedLink = linkToTake;
 			this.setInfluence(linkToTake.getInfluence());
 		} 
 
@@ -192,21 +275,49 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	// x must be lower than 7
 	// -ln((x+2)/4)/y+0.1 :
 
-	protected double computeBonus(int index, double strength) {
-		return -Math.log((index + 2) / 4) / strength + 0.1;
+	
+
+	protected float computeBonus(int index, double strength) {
+	
+		return (float) -(Math.log((index + 2f) / 4f) / strength) + 0.1f;
 	}
 
+	private void praiseSolution() {
+		List<DecisionLink> links = new ArrayList<>();
+		links.addAll(this.links);
+		Collections.reverse(links);
+		
+		for(int i =0; i<links.size() ; i++){
+			links.get(i).setStrength(1f);
+		}
+	}
+	
 	protected void affectPathElement(int index, double strength, Effect effect) {
+		if(index>=this.path.size()){
+			return;
+		}
+		
+		List<DecisionLink> links = new ArrayList<>();
+		links.addAll(this.links);
+		Collections.reverse(links);
+		float bonus = computeBonus(index, strength);
+		links.get(index).affectLink(bonus, effect);
+		
+		/*
 		ListIterator<DecisionNode> dit = this.path.listIterator(index);
-		double bonus = computeBonus(index, strength);
+		ListIterator<Influence> iit = this.influencePath.listIterator(index);
+		float bonus = computeBonus(index, strength);
 		if (dit.hasNext()) {
 			DecisionNode current = dit.next();
+			Influence appliedInf = iit.next();
 			if (dit.hasNext()) {
 				DecisionNode older = dit.next();
-				DecisionLink link = current.getLink(older);
-				link.affectLink(bonus, effect);
+				DecisionLink link = current.getLink(older,appliedInf);
+				if(link!=null){
+					link.affectLink(bonus, effect);
+				}
 			}
-		}
+		}*/
 	}
 
 	/**
@@ -223,22 +334,52 @@ public class LemmingMind extends Animat<LemmingsBody> {
 			depth = 0;
 		if (depth > 7)
 			depth = 7;
-		ListIterator<DecisionNode> dit = this.path.listIterator();
-		DecisionNode current = dit.next();
-		DecisionNode older = dit.next();
-		double bonus;
-		for (int i = 0; i < depth; i++) {
+		
+
+		List<DecisionLink> links = new ArrayList<>();
+		links.addAll(this.links);
+		Collections.reverse(links);
+		
+		for(int i =0; i<depth ; i++){
+			if(i>=links.size())
+				break;
+			float bonus = computeBonus(i, strength);
+			links.get(i).affectLink(bonus, effect);	
+		}
+		
+		/*
+		List<Influence> ilist=new ArrayList<Influence>();
+		ilist.addAll(this.influencePath);
+		Collections.reverse(ilist);
+		
+		List<DecisionNode> list= new ArrayList<DecisionNode>();
+		list.addAll(this.path);
+		Collections.reverse(list);
+		
+		DecisionNode older = list.get(0);
+		DecisionNode current;
+		Influence currenti;
+		float bonus;
+		for (int i = 1; i < depth; i++) {
 			bonus = computeBonus(i, strength);
-			if (dit.hasNext()) {
-				current = older;
-				older = dit.next();
-				DecisionLink link = current.getLink(older);
-				link.affectLink(bonus, effect);
-			} else {
+			current = older;
+			if(i<list.size()){
+				older=list.get(i);
+				currenti = ilist.get(i-1);
+				DecisionLink link = current.getLink(older,currenti);
+				
+				if(link!=null){
+				
+					link.affectLink(bonus, effect);					
+				}
+			}
+			else{
 				break;
 			}
-		}
+				
+		}*/
 	}
+	
 
 	@Override
 	protected LemmingsBody createBody(Environment env) {

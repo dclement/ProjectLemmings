@@ -30,6 +30,7 @@ import org.janusproject.kernel.status.Status;
 
 import environment.AIBody;
 import environment.Body;
+import environment.DeathReason;
 import environment.Direction;
 import environment.Environment;
 import environment.Influence;
@@ -120,6 +121,10 @@ public abstract class Animat<ABT extends AIBody> extends Agent {
 	
 	protected final Influence getAppliedInfluence(){
 		return this.getBody().getAppliedInfluence();
+	}
+	
+	protected final DeathReason getDeathReason(){
+		return this.getBody().getDeathReason();
 	}
 	
 	protected final boolean isDead(){

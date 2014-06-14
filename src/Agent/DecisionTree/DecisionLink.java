@@ -18,13 +18,13 @@ public class DecisionLink {
 		this.influence = influence;
 	}
 
-	public void affectLink(double strength, Effect effect){
+	public void affectLink(float strength, Effect effect){
 		if(effect == Effect.PENALIZE){
-			double value = strength*this.strength;
+			float value = strength*this.strength;
 			this.strength-=value;
 		}
 		else{
-			double value = strength*(1-this.strength);
+			float value = strength*(1-this.strength);
 			this.strength += value;
 		}
 	}
@@ -47,6 +47,12 @@ public class DecisionLink {
 
 	public DecisionNode getChild() {
 		return child;
+	}
+
+	@Override
+	public String toString() {
+		return "DecisionLink [parent=" + parent + ", influence=" + influence.toString()
+				+ ", strength=" + strength + ", child=" + child + ", hash=" + System.identityHashCode(this)+ " ]";
 	}
 
 	
