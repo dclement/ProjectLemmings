@@ -47,7 +47,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	public boolean isInStack(DecisionNode dn) {
 	
 		
-		List<DecisionNode> dnl= new ArrayList<>();
+		List<DecisionNode> dnl= new ArrayList<DecisionNode>();
 		dnl.addAll(this.path);
 		int i = 0;
 		while(i<dnl.size() && dnl.get(i)!=dn ){
@@ -68,7 +68,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 		influencePath = new Stack<Influence>();
 		influencePath.push(new Influence());
 		
-		links = new Stack<>();
+		links = new Stack<DecisionLink>();
 		links.push(new DecisionLink(null,startingNode,influencePath.peek(), 0.5f) );
 		
 		this.distanceToGoal = Double.MAX_VALUE;
@@ -283,7 +283,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 	}
 
 	private void praiseSolution() {
-		List<DecisionLink> links = new ArrayList<>();
+		List<DecisionLink> links = new ArrayList<DecisionLink>();
 		links.addAll(this.links);
 		Collections.reverse(links);
 		
@@ -297,7 +297,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 			return;
 		}
 		
-		List<DecisionLink> links = new ArrayList<>();
+		List<DecisionLink> links = new ArrayList<DecisionLink>();
 		links.addAll(this.links);
 		Collections.reverse(links);
 		float bonus = computeBonus(index, strength);
@@ -336,7 +336,7 @@ public class LemmingMind extends Animat<LemmingsBody> {
 			depth = 7;
 		
 
-		List<DecisionLink> links = new ArrayList<>();
+		List<DecisionLink> links = new ArrayList<DecisionLink>();
 		links.addAll(this.links);
 		Collections.reverse(links);
 		
